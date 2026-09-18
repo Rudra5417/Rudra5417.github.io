@@ -213,6 +213,73 @@
   .scroll-hint .down { color: var(--accent); font-size: 14px; }
   @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 
+  /* ── game-flavored extras ────────────────────── */
+  .player {
+    display: inline-flex; align-items: center; gap: 1rem;
+    margin-top: clamp(2rem, 4vw, 2.8rem);
+    border: 1px solid var(--border); border-radius: 14px;
+    background: linear-gradient(160deg, var(--surface-2), var(--surface));
+    padding: .75rem 1.15rem .8rem; flex-wrap: wrap;
+  }
+  .pl-badge {
+    font-family: var(--display); font-weight: 700; font-size: 1.5rem; line-height: 1;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 10px; padding: .5rem .6rem .45rem;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .pl-badge small { display: block; font-family: var(--mono); font-size: 8.5px; letter-spacing: .14em; color: var(--muted); margin-top: 2px; font-weight: 400; }
+  .pl-main { min-width: min(280px, 62vw); flex: 1; }
+  .pl-top { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+  .pl-rank { color: var(--accent); }
+  .pl-xp { color: var(--faint); }
+  .pl-bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.07); margin: .5rem 0 .4rem; overflow: hidden; }
+  .pl-bar span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--ember), var(--accent)); box-shadow: 0 0 10px rgba(233,161,59,.5); }
+  .player.in .pl-bar span { animation: fillBar 1.2s var(--ease) .3s forwards; }
+  @keyframes fillBar { to { width: 40%; } }
+  .pl-sub { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; color: var(--muted); }
+  .pl-sub b { color: var(--text); font-weight: 500; }
+
+  .journey { margin-top: 2.2rem; padding-top: 1.7rem; border-top: 1px dashed var(--border); }
+  .journey-head { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-bottom: 1.5rem; }
+  .journey-head::before { content: "▸ "; color: var(--accent); }
+  .jtrack { position: relative; height: 64px; }
+  .jlane { position: absolute; top: 15px; left: 0; right: 0; height: 3px; border-radius: 2px; background: rgba(255,255,255,.08); overflow: hidden; }
+  .jfill { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--green)); box-shadow: 0 0 8px rgba(233,161,59,.5); }
+  .about-grid .reveal.in .jfill { animation: fillLane 1.4s var(--ease) .35s forwards; }
+  @keyframes fillLane { to { width: 100%; } }
+  .jnode { position: absolute; top: 0; width: 110px; }
+  .jnode::before { content: ""; display: block; width: 13px; height: 13px; border-radius: 50%; background: var(--bg); border: 2px solid var(--faint); margin-bottom: 6px; }
+  .jnode b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+  .jnode span { font-family: var(--mono); font-size: 10px; letter-spacing: .05em; color: var(--faint); }
+  .j1 { left: 0; }
+  .j2 { left: 33.3%; transform: translateX(-50%); text-align: center; }
+  .j2::before { margin-left: auto; margin-right: auto; }
+  .j3 { left: 66.6%; transform: translateX(-50%); text-align: center; }
+  .j3::before { margin-left: auto; margin-right: auto; }
+  .j4 { left: 100%; transform: translateX(-100%); text-align: right; }
+  .j4::before { margin-left: auto; border-color: var(--green); background: var(--green); box-shadow: 0 0 12px rgba(74,222,128,.7); }
+
+  .quest-no { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); margin-bottom: .45rem; }
+  .quest-no.now { color: var(--accent); }
+  .chapters { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .55rem; }
+  .ch { font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; background: color-mix(in srgb, var(--bg) 55%, transparent); }
+  .ch.current { border-color: color-mix(in srgb, var(--green) 55%, transparent); color: var(--green); background: color-mix(in srgb, var(--green) 8%, transparent); display: inline-flex; align-items: center; gap: 5px; }
+  .ch.current::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px rgba(74,222,128,.8); animation: pulse 2s infinite; }
+
+  /* tag pop-in on skill grid reveal */
+  .skill-grid.in .tag { animation: popIn .45s var(--ease) both; }
+  .skill-group .tag:nth-child(1) { animation-delay: .04s; }
+  .skill-group .tag:nth-child(2) { animation-delay: .09s; }
+  .skill-group .tag:nth-child(3) { animation-delay: .14s; }
+  .skill-group .tag:nth-child(4) { animation-delay: .19s; }
+  .skill-group .tag:nth-child(5) { animation-delay: .24s; }
+  .skill-group .tag:nth-child(6) { animation-delay: .29s; }
+  .skill-group .tag:nth-child(7) { animation-delay: .34s; }
+  .skill-group .tag:nth-child(8) { animation-delay: .39s; }
+  .skill-group .tag:nth-child(9) { animation-delay: .44s; }
+  .skill-group .tag:nth-child(10) { animation-delay: .49s; }
+  @keyframes popIn { from { opacity: 0; transform: translateY(6px) scale(.92); } to { opacity: 1; transform: none; } }
+
   /* ── marquee ─────────────────────────────────── */
   .marquee {
     border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
@@ -425,6 +492,10 @@
     .status .dot, .scroll-hint { animation: none; }
     .orb { animation: none; }
     .mq-track { animation: none; width: auto; flex-wrap: wrap; }
+    .player.in .pl-bar span, .about-grid .reveal.in .jfill { animation: none; }
+    .player.in .pl-bar span { width: 40%; }
+    .about-grid .reveal.in .jfill { width: 100%; }
+    .skill-grid.in .tag { animation: none; opacity: 1; }
     #glow { display: none; }
     * { transition-duration: .01ms !important; }
   }
@@ -460,7 +531,7 @@
     <div class="orb-wrap ow-b"><div class="orb b" data-parallax="-0.08"></div></div>
     <div class="orb-wrap ow-c"><div class="orb c" data-parallax="0.05"></div></div>
     <div class="wrap">
-      <div class="status"><span class="dot"></span>Open to opportunities</div>
+      <div class="status"><span class="dot"></span>Online · open to opportunities</div>
       <h1>
         <span class="w" style="--i:0">Live</span> <span class="w" style="--i:1">games.</span>
         <span class="w" style="--i:2">Live</span> <span class="w" style="--i:3">data.</span>
@@ -478,6 +549,16 @@
         <a class="btn primary" href="#work">See selected work</a>
         <a class="btn ghost" href="https://github.com/Rudra5417" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
+
+      <div class="player reveal" style="--d:.25s">
+        <div class="pl-badge">35<small>LVL</small></div>
+        <div class="pl-main">
+          <div class="pl-top"><span class="pl-rank">Rank: Operator</span><span class="pl-xp">Content Ops XP</span></div>
+          <div class="pl-bar"><span></span></div>
+          <div class="pl-sub"><b>Epic Games · Fortnite Discover</b> — Los Angeles · 200+ surfaces maintained</div>
+        </div>
+      </div>
+
       <div class="scroll-hint">scroll <span class="down">↓</span></div>
     </div>
   </section>
@@ -486,10 +567,10 @@
   <div class="marquee" aria-hidden="true">
     <div class="mq-track">
       <div class="mq-group">
-        <span class="mq-item">Fortnite Discover</span><span class="mq-item">Live Operations</span><span class="mq-item">A/B Testing</span><span class="mq-item">Release Management</span><span class="mq-item">SQL</span><span class="mq-item">Databricks</span><span class="mq-item">Grafana</span><span class="mq-item">OpenSearch</span><span class="mq-item">Python</span><span class="mq-item">TensorFlow</span><span class="mq-item">BigQuery</span><span class="mq-item">FastAPI</span><span class="mq-item">Unity SDK</span><span class="mq-item">Los Angeles</span>
+        <span class="mq-item">Fortnite Discover</span><span class="mq-item">Live Operations</span><span class="mq-item">A/B Testing</span><span class="mq-item">Release Management</span><span class="mq-item">SQL</span><span class="mq-item">Databricks</span><span class="mq-item">Grafana</span><span class="mq-item">OpenSearch</span><span class="mq-item">Python</span><span class="mq-item">TensorFlow</span><span class="mq-item">BigQuery</span><span class="mq-item">FastAPI</span><span class="mq-item">Unity SDK</span><span class="mq-item">Los Angeles</span><span class="mq-item">Ch6 · The Simpsons</span><span class="mq-item">Ch7 · Pacific Break</span><span class="mq-item">Ch7 · Showdown</span><span class="mq-item">Ch7 · Runners</span>
       </div>
       <div class="mq-group">
-        <span class="mq-item">Fortnite Discover</span><span class="mq-item">Live Operations</span><span class="mq-item">A/B Testing</span><span class="mq-item">Release Management</span><span class="mq-item">SQL</span><span class="mq-item">Databricks</span><span class="mq-item">Grafana</span><span class="mq-item">OpenSearch</span><span class="mq-item">Python</span><span class="mq-item">TensorFlow</span><span class="mq-item">BigQuery</span><span class="mq-item">FastAPI</span><span class="mq-item">Unity SDK</span><span class="mq-item">Los Angeles</span>
+        <span class="mq-item">Fortnite Discover</span><span class="mq-item">Live Operations</span><span class="mq-item">A/B Testing</span><span class="mq-item">Release Management</span><span class="mq-item">SQL</span><span class="mq-item">Databricks</span><span class="mq-item">Grafana</span><span class="mq-item">OpenSearch</span><span class="mq-item">Python</span><span class="mq-item">TensorFlow</span><span class="mq-item">BigQuery</span><span class="mq-item">FastAPI</span><span class="mq-item">Unity SDK</span><span class="mq-item">Los Angeles</span><span class="mq-item">Ch6 · The Simpsons</span><span class="mq-item">Ch7 · Pacific Break</span><span class="mq-item">Ch7 · Showdown</span><span class="mq-item">Ch7 · Runners</span>
       </div>
     </div>
   </div>
@@ -515,6 +596,16 @@
             time by a third, A/B-test frameworks that moved real retention, and an energy scheduler
             that beats baseline by 21% on cost — with zero missed deadlines.
           </p>
+          <div class="journey">
+            <div class="journey-head">Career XP — four quests</div>
+            <div class="jtrack">
+              <div class="jlane"><span class="jfill"></span></div>
+              <div class="jnode j1"><b>DRDO</b><span>Apprentice</span></div>
+              <div class="jnode j2"><b>Easley-Dunn</b><span>Engineer</span></div>
+              <div class="jnode j3"><b>AWS</b><span>Analyst</span></div>
+              <div class="jnode j4"><b>Epic</b><span>Operator — now</span></div>
+            </div>
+          </div>
         </div>
         <div class="stats reveal" style="--d:.12s">
           <div class="stat"><div class="n"><em class="count" data-count="35">0</em><span class="suf">+</span> <span class="suf">/mo</span></div><div class="l">Fortnite Discover updates</div></div>
@@ -596,21 +687,27 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <h2>Experience</h2>
-        <span class="kicker">career path</span>
+        <span class="kicker">quest log</span>
       </div>
       <div class="timeline">
 
         <div class="job reveal">
-          <div class="when">Aug 2025 — now</div>
+          <div class="when"><div class="quest-no now">◆ Quest 04 — in progress</div>Aug 2025 — now</div>
           <div>
             <h3>Discover Operations Manager <span>@</span></h3>
             <div class="co">Epic Games · Fortnite</div>
+            <div class="chapters">
+              <span class="ch">Ch6 · MS2 — The Simpsons</span>
+              <span class="ch">Ch7 · S1 — Pacific Break</span>
+              <span class="ch">Ch7 · S2 — Showdown</span>
+              <span class="ch current">Ch7 · S3 — Runners</span>
+            </div>
             <p class="desc">I run the live side of Fortnite Discover — taking content from validation to launch, keeping every surface healthy, and building the dashboards and experiments that show whether it's actually connecting with players.</p>
           </div>
         </div>
 
         <div class="job reveal" style="--d:.06s">
-          <div class="when">Feb 2025 — Jul 2025</div>
+          <div class="when"><div class="quest-no">◆ Quest 03 — complete</div>Feb 2025 — Jul 2025</div>
           <div>
             <h3>Senior Business Analyst <span>@</span></h3>
             <div class="co">Amazon Web Services</div>
@@ -619,7 +716,7 @@
         </div>
 
         <div class="job reveal" style="--d:.12s">
-          <div class="when">Oct 2024 — Feb 2025</div>
+          <div class="when"><div class="quest-no">◆ Quest 02 — complete</div>Oct 2024 — Feb 2025</div>
           <div>
             <h3>Software Engineer, Game Analytics <span>@</span></h3>
             <div class="co">Easley-Dunn Productions</div>
@@ -628,7 +725,7 @@
         </div>
 
         <div class="job reveal" style="--d:.18s">
-          <div class="when">Jun 2020 — Oct 2020</div>
+          <div class="when"><div class="quest-no">◆ Quest 01 — complete</div>Jun 2020 — Oct 2020</div>
           <div>
             <h3>Data Scientist (Intern) <span>@</span></h3>
             <div class="co">DRDO — IRDE Labs</div>
@@ -644,7 +741,7 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <h2>Skills & tools</h2>
-        <span class="kicker">stack</span>
+        <span class="kicker">perks</span>
       </div>
       <div class="skill-grid reveal" style="--d:.05s">
         <div class="skill-group" style="--d:0s">
@@ -699,7 +796,7 @@
 
 <footer>
   <div class="wrap foot">
-    <p>© 2026 Rudra Patel · Los Angeles, CA · vanilla HTML/CSS/JS</p>
+    <p>© 2026 Rudra Patel · Los Angeles, CA · GG — thanks for playing</p>
     <a class="top" href="#top">Back to top ↑</a>
   </div>
 </footer>
