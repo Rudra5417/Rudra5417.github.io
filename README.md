@@ -14,6 +14,10 @@ git add index.html && git commit -m "update" && git push
 
 GitHub Pages redeploys automatically in about a minute.
 
+## Cinematic opening
+
+The hero opening is a generated Fortnite-style flyover (battle bus, floating islands, closing storm circle) that needs no assets. To use real footage instead, drop a muted **`intro.mp4`** (5–15s, landscape, H.264) next to `index.html` — it auto-plays fullscreen on every load and the animation stands down. Keep it under ~10 MB.
+
 ## Colophon
 
 - Dark, animated, single-page design — vanilla HTML / CSS / JS

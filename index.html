@@ -280,6 +280,34 @@
   .skill-group .tag:nth-child(10) { animation-delay: .49s; }
   @keyframes popIn { from { opacity: 0; transform: translateY(6px) scale(.92); } to { opacity: 1; transform: none; } }
 
+  /* ── canvases & overlays ─────────────────────── */
+  #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+  #hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0; transition: opacity .9s ease; background: #0b0b0c; }
+  #hero-video.on { opacity: 1; }
+  .hero-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .6s ease; background: linear-gradient(180deg, rgba(11,11,12,.74) 0%, rgba(11,11,12,.42) 45%, rgba(11,11,12,.94) 100%); }
+  body.cinema-video .hero-scrim { opacity: 1; }
+  #fx-canvas { position: fixed; inset: 0; z-index: 180; pointer-events: none; }
+  #boot { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .5s ease, visibility .5s; }
+  #boot.done { opacity: 0; visibility: hidden; pointer-events: none; }
+  .boot-card { width: min(420px, calc(100% - 3rem)); border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(160deg, var(--surface-2), var(--surface)); padding: 1.6rem 1.7rem 1.4rem; box-shadow: 0 30px 80px -30px rgba(0,0,0,.8); }
+  .boot-title { font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: .01em; }
+  .boot-title span { color: var(--accent); }
+  .boot-line { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: .45rem; min-height: 1.2em; }
+  .boot-bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.08); margin-top: 1.2rem; overflow: hidden; }
+  .boot-bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ember), var(--accent)); box-shadow: 0 0 12px rgba(233,161,59,.5); }
+  .boot-skip { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: .95rem; text-align: center; }
+  .caret { color: var(--accent); animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  #victory { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; pointer-events: none; }
+  body.victory #victory { display: flex; }
+  .v-txt { font-family: var(--display); font-weight: 700; font-size: clamp(2.4rem, 8vw, 5rem); letter-spacing: -.03em; color: var(--accent); text-shadow: 0 0 60px rgba(233,161,59,.8); animation: vicPop .5s var(--ease) both; }
+  .v-sub { font-family: var(--mono); font-size: 12.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: .6rem; text-align: center; animation: vicPop .5s var(--ease) .15s both; }
+  @keyframes vicPop { from { transform: scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+  .cv-f { position: absolute; width: 10px; height: 10px; border-radius: 50%; right: 16%; bottom: 20%; opacity: .8; background: color-mix(in srgb, var(--card-accent) 85%, transparent); box-shadow: 0 0 16px color-mix(in srgb, var(--card-accent) 75%, transparent); animation: floaty 4.6s var(--ease) infinite; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .foot-l { display: grid; gap: .3rem; }
+  .foot .hint { font-size: 10.5px; letter-spacing: .18em; color: var(--faint); opacity: .8; }
+
   /* ── marquee ─────────────────────────────────── */
   .marquee {
     border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
@@ -496,6 +524,9 @@
     .player.in .pl-bar span { width: 40%; }
     .about-grid .reveal.in .jfill { width: 100%; }
     .skill-grid.in .tag { animation: none; opacity: 1; }
+    .caret { animation: none; opacity: .7; }
+    .cv-f { animation: none; }
+    #boot { display: none; }
     #glow { display: none; }
     * { transition-duration: .01ms !important; }
   }
@@ -505,6 +536,25 @@
 </style>
 </head>
 <body>
+
+<!-- matchmaking intro — first visit only -->
+<div id="boot" aria-hidden="true">
+  <div class="boot-card">
+    <div class="boot-title">RUDRA_PATEL <span>// LOBBY</span></div>
+    <div class="boot-line">MAP: PORTFOLIO</div>
+    <div class="boot-bar"><span></span></div>
+    <div class="boot-skip">click to skip</div>
+  </div>
+</div>
+
+<!-- victory flash + confetti layer -->
+<div id="victory" aria-hidden="true">
+  <div>
+    <div class="v-txt">VICTORY ROYALE</div>
+    <div class="v-sub">player: RUDRA_PATEL · match won</div>
+  </div>
+</div>
+<canvas id="fx-canvas" aria-hidden="true"></canvas>
 
 <div id="progress"></div>
 <div id="glow" aria-hidden="true"></div>
@@ -530,6 +580,9 @@
     <div class="orb-wrap ow-a"><div class="orb a" data-parallax="0.15"></div></div>
     <div class="orb-wrap ow-b"><div class="orb b" data-parallax="-0.08"></div></div>
     <div class="orb-wrap ow-c"><div class="orb c" data-parallax="0.05"></div></div>
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <video id="hero-video" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+    <div class="hero-scrim" aria-hidden="true"></div>
     <div class="wrap">
       <div class="status"><span class="dot"></span>Online · open to opportunities</div>
       <h1>
@@ -537,7 +590,7 @@
         <span class="w" style="--i:2">Live</span> <span class="w" style="--i:3">data.</span>
         <span class="w accent" style="--i:4">No</span> <span class="w accent" style="--i:5">guesswork.</span>
       </h1>
-      <div class="role">Rudra Patel — Discover Operations Manager · Epic Games · Los Angeles</div>
+      <div class="role">Rudra Patel — <span id="type">Discover Operations Manager · Epic Games</span><span class="caret">▌</span> · Los Angeles</div>
       <p class="intro">
         I run <strong>live operations for Fortnite Discover</strong> at Epic Games — 35+ content
         drops a month across 200+ surfaces, backed by Databricks, SQL, and dashboards that cut
@@ -629,6 +682,7 @@
           <div class="card-visual">
             <span class="cv-label">Island Analytics</span>
             <span class="cv-num">01</span>
+            <i class="cv-f"></i>
           </div>
           <div class="card-body">
             <h3>Stormglass <span class="arrow">→</span></h3>
@@ -642,6 +696,7 @@
           <div class="card-visual">
             <span class="cv-label">Natural Language → Code</span>
             <span class="cv-num">02</span>
+            <i class="cv-f"></i>
           </div>
           <div class="card-body">
             <h3>Code Generator — GPT-3 <span class="arrow">→</span></h3>
@@ -655,6 +710,7 @@
           <div class="card-visual">
             <span class="cv-label">Document Intelligence</span>
             <span class="cv-num">03</span>
+            <i class="cv-f"></i>
           </div>
           <div class="card-body">
             <h3>DocBot <span class="arrow">→</span></h3>
@@ -669,6 +725,7 @@
           <div class="card-visual">
             <span class="cv-label">Grid Optimization</span>
             <span class="cv-num">04</span>
+            <i class="cv-f"></i>
           </div>
           <div class="card-body">
             <h3>Wattpath <span class="arrow">→</span></h3>
@@ -796,7 +853,10 @@
 
 <footer>
   <div class="wrap foot">
-    <p>© 2026 Rudra Patel · Los Angeles, CA · GG — thanks for playing</p>
+    <div class="foot-l">
+      <p>© 2026 Rudra Patel · Los Angeles, CA · GG — thanks for playing</p>
+      <p class="hint">psst · ↑ ↑ ↓ ↓ ← → ← → B A</p>
+    </div>
     <a class="top" href="#top">Back to top ↑</a>
   </div>
 </footer>
@@ -898,6 +958,252 @@
       }
     }, { passive: true });
   }
+</script>
+
+<script>
+(function () {
+  'use strict';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hiddenCtx = document.visibilityState === 'hidden';
+
+  /* ── 1) matchmaking boot (first visit only) ── */
+  const boot = document.getElementById('boot');
+  let seen = false;
+  try { seen = localStorage.getItem('rp_boot') === '1'; } catch (e) {}
+  if (boot && !seen && !reduce && !hiddenCtx) {
+    const lines = ['MAP: PORTFOLIO', 'SKIN: OPERATOR', 'FOUND: VISITOR', 'SEASON 7.3 — RUNNERS'];
+    const lbl = boot.querySelector('.boot-line');
+    const bar = boot.querySelector('.boot-bar span');
+    let i = 0, doneB = false;
+    const lblInt = setInterval(() => { i += 1; if (lbl) lbl.textContent = lines[i % lines.length]; }, 340);
+    const finish = () => {
+      if (doneB) return; doneB = true; clearInterval(lblInt);
+      boot.classList.add('done');
+      setTimeout(() => { try { localStorage.setItem('rp_boot', '1'); } catch (e) {} boot.remove(); }, 550);
+    };
+    requestAnimationFrame(() => {
+      bar.style.transition = 'width 1.5s cubic-bezier(.22,.61,.36,1)';
+      bar.style.width = '100%';
+    });
+    setTimeout(finish, 1750);
+    boot.addEventListener('click', finish);
+    addEventListener('keydown', finish, { once: true });
+  } else if (boot) { boot.remove(); }
+
+  /* ── 2) typewriter role line ── */
+  const tw = document.getElementById('type');
+  if (tw) {
+    const roles = ['Discover Operations Manager · Epic Games', 'Data Scientist · M.S., USC', 'Game Analytics Engineer', 'Live-ops Tinkerer'];
+    if (!reduce && !hiddenCtx) {
+      let ri = 0, ci = 0, del = false;
+      const tick = () => {
+        const r = roles[ri];
+        if (!del) {
+          ci += 1; tw.textContent = r.slice(0, ci);
+          if (ci === r.length) { del = true; setTimeout(tick, 1600); return; }
+          setTimeout(tick, 42);
+        } else {
+          ci -= 1; tw.textContent = r.slice(0, ci);
+          if (ci === 0) { del = false; ri = (ri + 1) % roles.length; setTimeout(tick, 380); return; }
+          setTimeout(tick, 22);
+        }
+      };
+      setTimeout(tick, 1200);
+    } else { tw.textContent = roles[0]; }
+  }
+
+  /* ── 3) Konami → VICTORY ROYALE ── */
+  const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let pos = 0, vicT = 0;
+  addEventListener('keydown', (e) => {
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    pos = (k === seq[pos]) ? pos + 1 : (k === seq[0] ? 1 : 0);
+    if (pos === seq.length) {
+      pos = 0;
+      document.body.classList.add('victory');
+      if (window.__fxVictory) window.__fxVictory();
+      clearTimeout(vicT);
+      vicT = setTimeout(() => document.body.classList.remove('victory'), 4200);
+    }
+  });
+
+  /* ── 4) fx canvas: click bursts + victory confetti ── */
+  const fx = document.getElementById('fx-canvas');
+  if (fx && !reduce) {
+    const cfx = fx.getContext('2d');
+    const FDPR = Math.min(devicePixelRatio || 1, 2);
+    let W = 0, H = 0;
+    const resizeFx = () => { W = innerWidth; H = innerHeight; fx.width = W * FDPR; fx.height = H * FDPR; cfx.setTransform(FDPR, 0, 0, FDPR, 0, 0); };
+    resizeFx(); addEventListener('resize', resizeFx, { passive: true });
+    let parts = [];
+    const push = (p) => { if (parts.length < 420) parts.push(p); };
+    const burst = (x, y, n, spread) => {
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * 6.283, sp = (0.6 + Math.random() * 1.6) * spread;
+        push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1.2, w: 3 + Math.random() * 4, h: 2 + Math.random() * 3, rot: Math.random() * 6.283, vr: (Math.random() - .5) * .3, life: 1, decay: .012 + Math.random() * .014, hue: Math.random() < .55 ? '233,161,59' : '228,87,46' });
+      }
+    };
+    addEventListener('pointerdown', (e) => burst(e.clientX, e.clientY, 9, 2.4), { passive: true });
+    window.__fxVictory = () => {
+      const hues = ['233,161,59', '228,87,46', '242,238,232', '74,222,128'];
+      for (let i = 0; i < 150; i++) {
+        push({ x: Math.random() * W, y: -20 - Math.random() * H * .4, vx: (Math.random() - .5) * 2.6, vy: 1.4 + Math.random() * 2.8, w: 5 + Math.random() * 7, h: 7 + Math.random() * 9, rot: Math.random() * 6.283, vr: (Math.random() - .5) * .5, life: 3 + Math.random() * 1.8, decay: .0007, hue: hues[i % 4] });
+      }
+    };
+    const fxLoop = () => {
+      if (document.hidden) return;
+      requestAnimationFrame(fxLoop);
+      cfx.clearRect(0, 0, W, H);
+      parts = parts.filter((p) => p.life > 0 && p.y < H + 40);
+      for (const p of parts) {
+        p.x += p.vx; p.y += p.vy; p.vy += .05; p.rot += p.vr; p.life -= p.decay;
+        cfx.save(); cfx.translate(p.x, p.y); cfx.rotate(p.rot);
+        cfx.globalAlpha = Math.max(0, Math.min(1, p.life));
+        cfx.fillStyle = 'rgb(' + p.hue + ')'; cfx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        cfx.restore();
+      }
+    };
+    requestAnimationFrame(fxLoop);
+  }
+
+  /* ── 5) hero cinematic: intro.mp4 if present, else canvas flyover ── */
+  const vid = document.getElementById('hero-video');
+  if (vid) {
+    let resolved = false;
+    const once = (fn) => () => { if (!resolved) { resolved = true; fn(); } };
+    vid.addEventListener('canplay', once(() => { vid.classList.add('on'); document.body.classList.add('cinema-video'); }));
+    vid.addEventListener('error', once(() => {}), true);
+    // if the clip is absent (404 / local), let the canvas take over
+    setTimeout(() => { if (!resolved) { /* canvas handles it */ } }, 2000);
+    vid.src = 'intro.mp4';
+    vid.muted = true; vid.playsInline = true; vid.autoplay = true;
+    vid.load();
+  }
+
+  const hero = document.querySelector('.hero');
+  const cvs = document.getElementById('hero-canvas');
+  if (hero && cvs) {
+    const hx2 = cvs.getContext('2d');
+    const HDPR = Math.min(devicePixelRatio || 1, 2);
+    let W = 0, H = 0;
+    const resize = () => {
+      const r = hero.getBoundingClientRect();
+      W = r.width; H = r.height;
+      cvs.width = W * HDPR; cvs.height = H * HDPR;
+      hx2.setTransform(HDPR, 0, 0, HDPR, 0, 0);
+    };
+    resize();
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(hero);
+
+    let mx = 0, my = 0, tox = 0, toy = 0;
+    addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      tox = (e.clientX - r.left - W / 2) / (W / 2);
+      toy = (e.clientY - r.top - H / 2) / (H / 2);
+    }, { passive: true });
+
+    const bus = { x: 1.18, y: .13 };
+    const islands = [
+      { x: .78, y: .34, s: 1.0, ph: 0, sway: 13 },
+      { x: .93, y: .74, s: .62, ph: 2.1, sway: 9 },
+      { x: .09, y: .86, s: .8, ph: 4.0, sway: 11 },
+    ];
+    const embers = Array.from({ length: 30 }, () => ({ x: Math.random(), y: Math.random(), r: .6 + Math.random() * 1.7, sp: .00035 + Math.random() * .0004, ph: Math.random() * 6.283 }));
+
+    const draw = (t) => {
+      const el = t / 1000;
+      mx += (tox - mx) * .04; my += (toy - my) * .04;
+      hx2.clearRect(0, 0, W, H);
+      // sky wash + nebula
+      const sky = hx2.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, 'rgba(24,22,28,0)');
+      sky.addColorStop(.55, 'rgba(18,16,20,.35)');
+      sky.addColorStop(1, 'rgba(11,11,12,0)');
+      hx2.fillStyle = sky; hx2.fillRect(0, 0, W, H);
+      let neb = hx2.createRadialGradient(W*.8, H*.15, 0, W*.8, H*.15, W*.45);
+      neb.addColorStop(0, 'rgba(233,161,59,.07)'); neb.addColorStop(1, 'rgba(233,161,59,0)');
+      hx2.fillStyle = neb; hx2.fillRect(0, 0, W, H);
+      neb = hx2.createRadialGradient(W*.12, H*.9, 0, W*.12, H*.9, W*.5);
+      neb.addColorStop(0, 'rgba(228,87,46,.06)'); neb.addColorStop(1, 'rgba(228,87,46,0)');
+      hx2.fillStyle = neb; hx2.fillRect(0, 0, W, H);
+      // rising embers
+      for (const p of embers) {
+        p.y -= p.sp * (1 - my * .3);
+        p.x += Math.sin(el * .5 + p.ph) * .00022 + mx * .00018;
+        if (p.y < -.02) { p.y = 1.02; p.x = Math.random(); }
+        const a = .12 + .14 * Math.sin(el * 1.8 + p.ph);
+        hx2.beginPath(); hx2.arc(p.x * W, p.y * H, p.r, 0, 6.283);
+        hx2.fillStyle = 'rgba(233,161,59,' + Math.max(0, a) + ')'; hx2.fill();
+      }
+      // storm circle — closing loop over 40s
+      const cyc = (el % 40) / 40;
+      const scx = W * .5 + mx * 24, scy = H * .6 + my * 16;
+      const R = 60 + (1 - cyc) * (Math.min(W, H) * .62);
+      hx2.beginPath(); hx2.arc(scx, scy, R, 0, 6.283);
+      hx2.strokeStyle = 'rgba(74,222,128,.30)'; hx2.lineWidth = 2; hx2.stroke();
+      hx2.beginPath(); hx2.arc(scx, scy, R + 7, 0, 6.283);
+      hx2.strokeStyle = 'rgba(233,161,59,.16)'; hx2.lineWidth = 1.5; hx2.stroke();
+      // battle bus drifting
+      const bt = (el * .045) % 1.4;
+      const bx = W * (1.18 - bt), by = H * bus.y + Math.sin(el * .8) * 5;
+      const bs = Math.min(W / 900, 1);
+      for (let i = -1.6; i <= 1.6; i += 1.07) {
+        hx2.beginPath(); hx2.arc(bx + i * 22 * bs, by - 34 * bs, 12 * bs, 0, 6.283);
+        hx2.fillStyle = 'rgba(120,80,50,.5)'; hx2.fill();
+      }
+      hx2.beginPath();
+      hx2.moveTo(bx - 40 * bs, by - 26 * bs); hx2.lineTo(bx + 40 * bs, by - 26 * bs);
+      hx2.lineTo(bx + 20 * bs, by - 12 * bs); hx2.lineTo(bx - 20 * bs, by - 12 * bs);
+      hx2.closePath(); hx2.fillStyle = '#2a2118'; hx2.fill();
+      hx2.fillStyle = 'rgba(233,161,59,.9)';
+      hx2.fillRect(bx - 34 * bs, by - 24 * bs, 8 * bs, 4 * bs);
+      hx2.fillRect(bx + 4 * bs, by - 24 * bs, 8 * bs, 4 * bs);
+      // floating islands
+      for (const is of islands) {
+        const cx = is.x * W + Math.sin(el * .3 + is.ph) * is.sway + mx * 20;
+        const cy = is.y * H + Math.cos(el * .24 + is.ph) * is.sway * .5 + my * 14;
+        const s = is.s * Math.min(W / 900, 1);
+        hx2.beginPath(); hx2.ellipse(cx, cy + 44 * s, 66 * s, 11 * s, 0, 0, 6.283);
+        hx2.fillStyle = 'rgba(0,0,0,.4)'; hx2.fill();
+        hx2.beginPath();
+        hx2.moveTo(cx - 60 * s, cy - 8 * s);
+        hx2.quadraticCurveTo(cx - 68 * s, cy + 30 * s, cx - 42 * s, cy + 40 * s);
+        hx2.quadraticCurveTo(cx - 26 * s, cy + 52 * s, cx, cy + 50 * s);
+        hx2.quadraticCurveTo(cx + 30 * s, cy + 52 * s, cx + 46 * s, cy + 38 * s);
+        hx2.quadraticCurveTo(cx + 70 * s, cy + 28 * s, cx + 60 * s, cy - 8 * s);
+        hx2.closePath(); hx2.fillStyle = '#151519'; hx2.fill();
+        hx2.beginPath();
+        hx2.moveTo(cx - 60 * s, cy - 8 * s);
+        hx2.quadraticCurveTo(cx - 28 * s, cy - 25 * s, cx, cy - 18 * s);
+        hx2.quadraticCurveTo(cx + 32 * s, cy - 27 * s, cx + 60 * s, cy - 8 * s);
+        hx2.quadraticCurveTo(cx + 28 * s, cy - 4 * s, cx - 28 * s, cy - 4 * s);
+        hx2.closePath(); hx2.fillStyle = '#1b1f18'; hx2.fill();
+        const hx = cx + (is.ph > 3 ? -16 : 8) * s, hy = cy - 15 * s;
+        hx2.fillStyle = '#111113';
+        hx2.fillRect(hx - 11 * s, hy - 13 * s, 22 * s, 13 * s);
+        hx2.beginPath();
+        hx2.moveTo(hx - 14 * s, hy - 12 * s); hx2.lineTo(hx, hy - 25 * s); hx2.lineTo(hx + 14 * s, hy - 12 * s);
+        hx2.closePath(); hx2.fill();
+        hx2.fillStyle = 'rgba(233,161,59,.85)';
+        hx2.fillRect(hx - 5 * s, hy - 8 * s, 5 * s, 5 * s);
+        hx2.fillRect(hx + 4 * s, hy - 8 * s, 5 * s, 5 * s);
+      }
+    };
+
+    const startCin = () => {
+      if (reduce || hiddenCtx) { draw(3000); return; }
+      const loop = () => { if (document.hidden) return; requestAnimationFrame(loop); draw(performance.now()); };
+      requestAnimationFrame(loop);
+    };
+
+    // if a real clip exists it wins (video 'on' class), else the cinematic runs
+    if (vid) {
+      let swapDone = false;
+      const swap = () => { if (swapDone) return; swapDone = true; if (!document.body.classList.contains('cinema-video')) startCin(); };
+      setTimeout(swap, 2000);
+    } else { startCin(); }
+  }
+})();
 </script>
 
 </body>
