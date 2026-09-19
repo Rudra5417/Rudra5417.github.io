@@ -289,6 +289,10 @@
   #hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0; transition: opacity .9s ease; background: #0b0b0c; }
   #hero-video.on { opacity: 1; }
   .hero-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .6s ease; background: linear-gradient(180deg, rgba(11,11,12,.74) 0%, rgba(11,11,12,.42) 45%, rgba(11,11,12,.94) 100%); }
+  .hud { position: absolute; right: var(--pad); bottom: 1.3rem; z-index: 3; display: none; align-items: center; gap: .55rem; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: var(--faint); }
+  body.cine3d .hud { display: flex; }
+  .hud .hud-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,.8); animation: pulse 1.6s infinite; }
+  .hud .hud-f { color: var(--muted); }
   body.cinema-video .hero-scrim { opacity: 1; }
   #fx-canvas { position: fixed; inset: 0; z-index: 180; pointer-events: none; }
   #boot { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .5s ease, visibility .5s; }
@@ -656,6 +660,11 @@
       </div>
 
       <div class="scroll-hint">scroll <span class="down">↓</span></div>
+      <div class="hud" aria-hidden="true">
+        <span class="hud-dot"></span>
+        <span>UPLINK STABLE</span>
+        <span class="hud-f" id="hudFrame">F·000000</span>
+      </div>
     </div>
   </section>
 
@@ -1675,6 +1684,7 @@
     }
 
     // core light at the end of the tunnel
+    let coreGlow = null, coreGlow2 = null;
     (function makeGlow() {
       const c = document.createElement('canvas');
       c.width = c.height = 256;
@@ -1684,12 +1694,38 @@
       grad.addColorStop(.3, 'rgba(45,212,247,.55)');
       grad.addColorStop(1, 'rgba(45,212,247,0)');
       g.fillStyle = grad; g.fillRect(0, 0, 256, 256);
-      coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      const tex = new THREE.CanvasTexture(c);
+      coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
       coreGlow.scale.set(10, 10, 1);
       coreGlow.position.set(0, 0.2, -13.5);
       scene.add(coreGlow);
+      coreGlow2 = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0x8b5cf6, map: tex, transparent: true, opacity: 0.4, depthWrite: false, blending: THREE.AdditiveBlending }));
+      coreGlow2.scale.set(7, 7, 1);
+      coreGlow2.position.set(0, 0.2, -13.5);
+      scene.add(coreGlow2);
     })();
-    let coreGlow = null;
+    // gyroscope lattice around the core
+    const wireA = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.42 });
+    const wireB = new THREE.MeshBasicMaterial({ color: 0x2dd4f7, wireframe: true, transparent: true, opacity: 0.34 });
+    const wireC = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.22 });
+    const gim1 = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.016, 6, 56), wireA);
+    const gim2 = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.013, 6, 56), wireB);
+    const gim3 = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.01, 6, 64), wireC);
+    const gyro = new THREE.Group();
+    gyro.add(gim1, gim2, gim3);
+    gyro.position.set(0, 0.2, -13.5);
+    scene.add(gyro);
+
+    // shockwave ring that ripples down the tunnel
+    const waveMat = new THREE.MeshBasicMaterial({ color: 0xbfefff, transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
+    const waveRing = new THREE.Mesh(new THREE.RingGeometry(0.85, 1.0, 64), waveMat);
+    waveRing.rotation.x = -0.1; waveRing.rotation.y = 0.06;
+    waveRing.position.set(0, 0.2, -13.5);
+    scene.add(waveRing);
+
+    let surge = 0, surgeAt = 3.2, nextWave = 6.0, waveT = -99, frameN = 0;
+    const hudEl = document.getElementById('hudFrame');
+    hero.addEventListener('pointerdown', function () { surge = Math.min(surge + 1.4, 2.6); }, { passive: true });
 
     // warp streak lines
     const lineN = 220;
@@ -1735,19 +1771,29 @@
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
-      // warp fast during the lobby, then settle into a slow dream-glide
-      const fTarget = t > 4.2 ? 0.16 : 1;
-      flow += (fTarget - flow) * 0.02;
+      // ── flow: warp in, then a living glide with surge pulses ──
+      const baseFlow = t > 3.8 ? 0.42 : 1;
+      if (t >= surgeAt) { surgeAt = t + rand(6, 9); surge = 1; }
+      surge *= 0.985;
+      const fTarget = Math.min(baseFlow + surge * 1.6, 3);
+      flow += (fTarget - flow) * 0.03;
 
-      // rings glide toward camera
+      // rings: glide + counter-spin + elliptical breathing
       for (let i = 0; i < rings.length; i++) {
         const rg = rings[i];
         rg.g.position.z += 0.34 * flow;
-        rg.g.rotation.z += rg.spin * 0.012;
+        rg.g.rotation.z += rg.spin * 0.06;
+        const br = 1 + Math.sin(t * 0.9 + i * 0.55) * 0.035;
+        rg.g.scale.set(br, br, 1);
         if (rg.g.position.z > 2.2) rg.g.position.z = rg.z0 - 26;
       }
+      // shared ring shimmer
+      ringMatA.opacity = 0.5 + Math.sin(t * 1.1) * 0.1;
+      ringMatB.opacity = 0.35 + Math.sin(t * 1.6 + 1) * 0.1;
+      ringMatC.opacity = 0.18 + Math.sin(t * 2.1 + 2) * 0.08;
 
-      // streak lines
+      // streaks — speed-linked length and glow
+      streakLines.material.opacity = 0.4 + flow * 0.35;
       const lp = streakLines.geometry.attributes.position.array;
       for (let i = 0; i < lineN; i++) {
         const d = lineDat[i];
@@ -1757,7 +1803,7 @@
           d.x = Math.cos(a2) * r2; d.y = Math.sin(a2) * r2; d.z = -24;
         }
         lp[i * 6] = d.x; lp[i * 6 + 1] = d.y; lp[i * 6 + 2] = d.z;
-        lp[i * 6 + 3] = d.x; lp[i * 6 + 4] = d.y; lp[i * 6 + 5] = d.z + d.len;
+        lp[i * 6 + 3] = d.x; lp[i * 6 + 4] = d.y; lp[i * 6 + 5] = d.z + d.len * (0.7 + flow);
       }
       streakLines.geometry.attributes.position.needsUpdate = true;
 
@@ -1769,17 +1815,45 @@
       }
       specks.geometry.attributes.position.needsUpdate = true;
 
-      // core pulse + parallax
-      const pulse = 1 + Math.sin(t * 0.9) * 0.05;
+      // gyroscope lattice spins around the core
+      gim1.rotation.x += 0.006; gim1.rotation.y += 0.004;
+      gim2.rotation.y += 0.009; gim2.rotation.z += 0.005;
+      gim3.rotation.x -= 0.004; gim3.rotation.z += 0.007;
+
+      // shockwave ring ripples down the tunnel
+      if (t >= nextWave) { nextWave = t + rand(7, 10); waveT = t; }
+      const wp = 1 - Math.min(1, (t - waveT) / 1.5);
+      if (wp > 0) {
+        const ease = 1 - Math.pow(1 - wp, 3);
+        waveRing.position.z = -13.5 + 15.5 * ease;
+        waveRing.scale.setScalar(0.4 + 5.6 * ease);
+        waveRing.material.opacity = Math.sin(Math.PI * wp) * 0.55;
+      } else { waveRing.material.opacity = 0; }
+
+      // core — pulsing, parallax, violet counter-glow
+      const pulse = 1 + Math.sin(t * 0.9) * 0.14;
       coreGlow.scale.set(10 * pulse, 10 * pulse, 1);
       coreGlow.position.x = mouse.x * 0.5;
       coreGlow.position.y = 0.2 + mouse.y * 0.3;
+      coreGlow.material.opacity = 0.75 + Math.sin(t * 1.3) * 0.25;
+      coreGlow2.position.x = coreGlow.position.x;
+      coreGlow2.position.y = coreGlow.position.y;
+      coreGlow2.scale.set(7 + Math.sin(t * 1.7 + 2) * 1.2, 7 + Math.sin(t * 1.7 + 2) * 1.2, 1);
+      coreGlow2.material.opacity = 0.25 + 0.2 * (0.5 + 0.5 * Math.sin(t * 1.9));
+      gyro.position.x = coreGlow.position.x;
+      gyro.position.y = coreGlow.position.y;
 
-      // camera: smooth parallax, rolling drift
-      camRoll += (Math.sin(t * 0.05) * 0.02 - camRoll) * 0.02;
-      camera.position.set(mouse.x * 0.9, 0.2 + mouse.y * 0.5 + Math.sin(t * 0.3) * 0.03, 2);
+      // camera: parallax, roll, FOV breathing
+      camRoll += (Math.sin(t * 0.07) * 0.035 - camRoll) * 0.02;
+      camera.position.set(mouse.x * 0.9, 0.2 + mouse.y * 0.5 + Math.sin(t * 0.5) * 0.035, 2);
+      camera.fov = 55 + Math.sin(t * 0.55) * 1.1;
+      camera.updateProjectionMatrix();
       camera.lookAt(0, 0.15, -8);
       camera.rotateZ(camRoll);
+
+      // live telemetry
+      frameN = (frameN + 1) % 1000000;
+      if (hudEl) hudEl.textContent = 'F·' + ('00000' + frameN).slice(-6);
 
       renderer.render(scene, camera);
     }
