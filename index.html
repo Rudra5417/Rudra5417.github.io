@@ -1830,9 +1830,11 @@
 
     const FORWARD = new THREE.Vector3(0, 0, 1);
     const tmpV = new THREE.Vector3();
-    function face(g, pt) {
+    const desiredQ = new THREE.Quaternion();
+    function faceSmooth(g, pt, step) {
       tmpV.subVectors(pt, g.position).normalize();
-      g.quaternion.setFromUnitVectors(FORWARD, tmpV);
+      desiredQ.setFromUnitVectors(FORWARD, tmpV);
+      g.quaternion.rotateTowards(desiredQ, step);
     }
     function nearestMeteor(pos) {
       let best = null, bd = 1e9;
@@ -1869,54 +1871,58 @@
 
     function duelAstro(t, self, foe) {
       const g = self.g, u = g.userData;
-      if (self.mode === 'float') {
-        const fx = self.base.x + Math.sin(t * 0.32 + self.ph) * 0.55;
-        const fy = self.base.y + Math.cos(t * 0.24 + self.ph * 1.7) * 0.4;
-        g.position.x += (fx - g.position.x) * 0.03;
-        g.position.y += (fy - g.position.y) * 0.03;
+      if (self.mode === 'aim' || self.mode === 'recoil' || self.mode === 'float') {
+        // continuous drift — the pilot never stops, so motion stays smooth
+        const dt = { x: self.base.x + Math.sin(t * 0.32 + self.ph) * 0.55, y: self.base.y + Math.cos(t * 0.24 + self.ph * 1.7) * 0.4 };
+        g.position.x += (dt.x - g.position.x) * 0.045;
+        g.position.y += (dt.y - g.position.y) * 0.045;
         g.position.z += (self.base.z - g.position.z) * 0.02;
         u.legL.rotation.x = Math.sin(t * 3 + self.ph) * 0.5;
         u.legR.rotation.x = -Math.sin(t * 3 + self.ph) * 0.5;
         u.armL.rotation.x = Math.sin(t * 2.4 + self.ph) * 0.3;
         u.armR.rotation.x = -Math.sin(t * 2.4 + self.ph) * 0.3;
-        u.gun.rotation.x = 0;
-        if (!self.dodgeAt && self.fireT < t) { self.mode = 'aim'; self.tm = t + 0.45; self.fireT = t + rand(5, 8); }
-        if (self.dodgeAt && t >= self.dodgeAt) {
-          self.dodgeAt = 0;
-          self.dodgeDir = { x: (Math.random() < 0.5 ? 1 : -1) * 0.85, y: (Math.random() - 0.5) * 0.7 };
-          self.dodgeFrom = { x: g.position.x, y: g.position.y };
-          self.dodgeT = t + 0.45;
-          self.mode = 'dodge';
+        if (self.mode === 'aim') {
+          faceSmooth(g, foe.g.position, 0.09);
+          u.gun.rotation.x = -0.5 + Math.sin(t * 30) * 0.06;
+          if (t > self.tm) fire(self, foe, t);
+        } else if (self.mode === 'recoil') {
+          faceSmooth(g, foe.g.position, 0.09);
+          u.gun.rotation.x = 0.4;
+          if (t > self.tm) { self.mode = 'float'; u.gun.rotation.x = 0; }
+        } else {
+          faceSmooth(g, foe.g.position, 0.045);
+          u.gun.rotation.x = 0;
+          if (!self.dodgeAt && self.fireT < t) { self.mode = 'aim'; self.tm = t + 0.45; self.fireT = t + rand(5, 8); }
+          if (self.dodgeAt && t >= self.dodgeAt) {
+            self.dodgeAt = 0;
+            self.dodgeDir = { x: (Math.random() < 0.5 ? 1 : -1) * 0.85, y: (Math.random() - 0.5) * 0.7 };
+            self.dodgeFrom = { x: g.position.x, y: g.position.y };
+            self.dodgeT = t + 0.45;
+            self.mode = 'dodge';
+          }
+          if (self.landT < t && !self.dodgeAt && self.fireT - t > 2.2) { self.mode = 'toLand'; }
         }
-        if (self.landT < t && !self.dodgeAt) { self.mode = 'toLand'; }
-      } else if (self.mode === 'aim') {
-        face(g, foe.g.position);
-        u.gun.rotation.x = -0.5 + Math.sin(t * 30) * 0.06;
-        if (t > self.tm) fire(self, foe, t);
-      } else if (self.mode === 'recoil') {
-        u.gun.rotation.x = 0.4;
-        g.position.x += (self.base.x + Math.sin(t * 0.32 + self.ph) * 0.55 - g.position.x) * 0.04;
-        g.position.y += (self.base.y + Math.cos(t * 0.24 + self.ph * 1.7) * 0.4 - g.position.y) * 0.04;
-        if (t > self.tm) { self.mode = 'float'; u.gun.rotation.x = 0; }
       } else if (self.mode === 'dodge') {
         const p = Math.min(1, (t - (self.dodgeT - 0.45)) / 0.45);
         g.position.x = self.dodgeFrom.x + self.dodgeDir.x * Math.sin(p * Math.PI);
         g.position.y = self.dodgeFrom.y + self.dodgeDir.y * Math.sin(p * Math.PI);
-        face(g, foe.g.position);
+        faceSmooth(g, foe.g.position, 0.12);
         g.rotateZ(Math.sin(p * Math.PI) * 0.9 - (self.dodgeRoll || 0));
         self.dodgeRoll = Math.sin(p * Math.PI) * 0.9;
-        if (p >= 1) { self.dodgeRoll = 0; self.base = { x: g.position.x, y: g.position.y, z: g.position.z }; self.mode = 'float'; }
+        if (p >= 1) { self.dodgeRoll = 0; self.base = { x: self.dodgeFrom.x, y: self.dodgeFrom.y, z: g.position.z }; self.mode = 'float'; }
       } else if (self.mode === 'toLand') {
         const md = nearestMeteor(g.position);
         const pt = md ? md.m.position : new THREE.Vector3(self.base.x, self.base.y, self.base.z);
-        face(g, pt);
-        const d = g.position.distanceTo(pt);
-        g.position.lerp(pt, 0.035);
-        if (d < 0.16) { self.mode = 'landed'; self.tm = t + 0.7; }
+        faceSmooth(g, pt, 0.08);
+        g.position.x += (pt.x - g.position.x) * 0.02;
+        g.position.y += (pt.y - g.position.y) * 0.02;
+        g.position.z += (pt.z - g.position.z) * 0.03;
+        if (g.position.distanceTo(pt) < 0.18) { self.mode = 'landed'; self.tm = t + 0.7; self.meteor = md; }
       } else if (self.mode === 'landed') {
-        g.scale.setScalar(0.95);
-        face(g, foe.g.position);
+        g.scale.setScalar(0.98 + Math.sin(t * 4) * 0.03);
+        faceSmooth(g, foe.g.position, 0.06);
         u.legL.rotation.x = 1.2; u.legR.rotation.x = 1.2;
+        if (self.meteor) g.position.y = self.meteor.m.position.y + Math.sin(t * 2) * 0.035;
         if (t > self.tm) {
           g.scale.setScalar(1.15);
           u.legL.rotation.x = 0; u.legR.rotation.x = 0;
@@ -1940,6 +1946,7 @@
           self.landT = t + rand(8, 12);
         }
       }
+    }      }
     }
 
     function updateDuel(t) {
@@ -1986,14 +1993,6 @@
       }
     }
 
-    // shooting star
-    const meteorGeo = new THREE.BufferGeometry();
-    meteorGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
-    const meteorMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-    const meteorLine = new THREE.Line(meteorGeo, meteorMat);
-    scene.add(meteorLine);
-    let meteor = { active: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, age: 0 };
-
     // drifting dust motes
     const dustN = 90;
     const dGeo = new THREE.BufferGeometry();
@@ -2004,7 +2003,7 @@
     dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
     const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({ color: 0xbfd4ff, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
 
-    let pulse = 0, nextMeteor = 5, frameN = 0;
+    let pulse = 0, frameN = 0;
     const hudEl = document.getElementById('hudFrame');
     hero.addEventListener('pointerdown', function () { pulse = 1; }, { passive: true });
         const mouse = { x: 0, y: 0 };
@@ -2033,21 +2032,6 @@
       gal.material.rotation = t * 0.02;
 
       updateDuel(t);
-
-      // shooting star
-      if (meteor.active) {
-        meteor.age += 0.016;
-        meteor.x += meteor.vx; meteor.y += meteor.vy;
-        const mp = meteorGeo.attributes.position.array;
-        mp[0] = meteor.x; mp[1] = meteor.y; mp[2] = meteor.z;
-        mp[3] = meteor.x - meteor.vx * 0.45; mp[4] = meteor.y - meteor.vy * 0.45; mp[5] = meteor.z;
-        meteorGeo.attributes.position.needsUpdate = true;
-        meteorMat.opacity = Math.max(0, Math.sin(Math.PI * Math.min(1, meteor.age / 1.4))) * 0.9;
-        if (meteor.age >= 1.4) { meteor.active = false; meteorMat.opacity = 0; nextMeteor = t + rand(9, 15); }
-      } else if (t >= nextMeteor) {
-        const sx = rand(-9, 9), sy = rand(3.2, 4.6), sz = rand(-22, -13);
-        meteor = { active: true, x: sx, y: sy, z: sz, vx: -0.14 * rand(0.8, 1.3), vy: -0.12 * rand(0.8, 1.3), age: 0 };
-      }
 
       // dust motes drift
       const dp = dust.geometry.attributes.position.array;
