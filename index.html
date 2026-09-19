@@ -2043,6 +2043,17 @@
       }
     }
 
+    // drifting dust motes
+    const dustN = 90;
+    const dGeo = new THREE.BufferGeometry();
+    const dPos = new Float32Array(dustN * 3);
+    for (let i = 0; i < dustN; i++) {
+      dPos[i * 3] = rand(-11, 11); dPos[i * 3 + 1] = rand(-3, 4); dPos[i * 3 + 2] = rand(-24, -2);
+    }
+    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+    const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({ color: 0xbfd4ff, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    scene.add(dust);
+
     let pulse = 0, frameN = 0;
     const hudEl = document.getElementById('hudFrame');
     hero.addEventListener('pointerdown', function () { pulse = 1; }, { passive: true });
