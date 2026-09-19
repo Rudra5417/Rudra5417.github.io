@@ -1662,101 +1662,176 @@
     const TWO_PI = Math.PI * 2;
     const rand = function (a, b) { return a + Math.random() * (b - a); };
 
-    // ── light tunnel — infinite glide through concentric rings ──
-    scene.fog = new THREE.Fog(0x05060a, 4, 26);
+    // ── cosmos — a calm, deep-space world ──
+    scene.fog = new THREE.Fog(0x05060a, 12, 55);
 
-    const ringMatA = new THREE.MeshBasicMaterial({ color: 0x2dd4f7, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
-    const ringMatB = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
-    const ringMatC = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
-    const rings = [];
-    for (let i = 0; i < 26; i++) {
-      const g = new THREE.Group();
-      const radius = rand(1.7, 3.1);
-      const core = new THREE.Mesh(new THREE.RingGeometry(radius * 0.93, radius, 48), ringMatA);
-      const edge = new THREE.Mesh(new THREE.RingGeometry(radius * 1.005, radius * 1.03, 48), ringMatB);
-      const halo = new THREE.Mesh(new THREE.RingGeometry(radius * 1.07, radius * 1.2, 48), ringMatC);
-      const tilt = new THREE.Euler(rand(-0.16, 0.16), rand(-0.12, 0.12), 0);
-      core.rotation.copy(tilt); edge.rotation.copy(tilt); halo.rotation.copy(tilt);
-      g.add(core, edge, halo);
-      g.position.z = -i * 1.05;
-      scene.add(g);
-      rings.push({ g: g, z0: -i * 1.05, spin: rand(-0.3, 0.3) });
-    }
+    // lights for the planet
+    scene.add(new THREE.AmbientLight(0x3a4a6a, 0.85));
+    const sun = new THREE.DirectionalLight(0xfff2dd, 1.5);
+    sun.position.set(6, 4, 4); scene.add(sun);
+    const rimL = new THREE.DirectionalLight(0x8b5cf6, 0.6);
+    rimL.position.set(-6, -2, 2); scene.add(rimL);
 
-    // core light at the end of the tunnel
-    let coreGlow = null, coreGlow2 = null;
-    (function makeGlow() {
-      const c = document.createElement('canvas');
-      c.width = c.height = 256;
+    // stars — dense field, two sizes
+    const mkStars = function (n, size, color) {
+      const g = new THREE.BufferGeometry();
+      const p = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) {
+        const th = Math.random() * TWO_PI, ph = Math.acos(Math.random() * 2 - 1);
+        const r = 30 + Math.random() * 16;
+        p[i * 3]     = r * Math.sin(ph) * Math.cos(th);
+        p[i * 3 + 1] = r * Math.cos(ph) * 0.85;
+        p[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th);
+      }
+      g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+      const m = new THREE.PointsMaterial({ color: color, size: size, transparent: true, opacity: 1, sizeAttenuation: true, depthWrite: false });
+      m.fog = false;
+      const pts = new THREE.Points(g, m);
+      scene.add(pts);
+      return pts;
+    };
+    const starA = mkStars(900, 0.05, 0xdbe6ff);
+    const starB = mkStars(160, 0.09, 0xffffff);
+
+    // soft sprite texture helpers
+    const nebTex = (function () {
+      const c = document.createElement('canvas'); c.width = c.height = 256;
       const g = c.getContext('2d');
-      const grad = g.createRadialGradient(128, 128, 2, 128, 128, 126);
-      grad.addColorStop(0, 'rgba(190,242,255,1)');
-      grad.addColorStop(.3, 'rgba(45,212,247,.55)');
-      grad.addColorStop(1, 'rgba(45,212,247,0)');
-      g.fillStyle = grad; g.fillRect(0, 0, 256, 256);
-      const tex = new THREE.CanvasTexture(c);
-      coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-      coreGlow.scale.set(10, 10, 1);
-      coreGlow.position.set(0, 0.2, -13.5);
-      scene.add(coreGlow);
-      coreGlow2 = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0x8b5cf6, map: tex, transparent: true, opacity: 0.4, depthWrite: false, blending: THREE.AdditiveBlending }));
-      coreGlow2.scale.set(7, 7, 1);
-      coreGlow2.position.set(0, 0.2, -13.5);
-      scene.add(coreGlow2);
+      const gr = g.createRadialGradient(128, 128, 4, 128, 128, 124);
+      gr.addColorStop(0, 'rgba(170,195,255,.8)');
+      gr.addColorStop(.45, 'rgba(120,130,255,.28)');
+      gr.addColorStop(1, 'rgba(120,130,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(c);
     })();
-    // gyroscope lattice around the core
-    const wireA = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.42 });
-    const wireB = new THREE.MeshBasicMaterial({ color: 0x2dd4f7, wireframe: true, transparent: true, opacity: 0.34 });
-    const wireC = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.22 });
-    const gim1 = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.016, 6, 56), wireA);
-    const gim2 = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.013, 6, 56), wireB);
-    const gim3 = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.01, 6, 64), wireC);
-    const gyro = new THREE.Group();
-    gyro.add(gim1, gim2, gim3);
-    gyro.position.set(0, 0.2, -13.5);
-    scene.add(gyro);
+    const bokehTex = (function () {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d');
+      const gr = g.createRadialGradient(64, 64, 2, 64, 64, 62);
+      gr.addColorStop(0, 'rgba(255,255,255,1)');
+      gr.addColorStop(.25, 'rgba(200,230,255,.6)');
+      gr.addColorStop(1, 'rgba(200,230,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+      return new THREE.CanvasTexture(c);
+    })();
 
-    // shockwave ring that ripples down the tunnel
-    const waveMat = new THREE.MeshBasicMaterial({ color: 0xbfefff, transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
-    const waveRing = new THREE.Mesh(new THREE.RingGeometry(0.85, 1.0, 64), waveMat);
-    waveRing.rotation.x = -0.1; waveRing.rotation.y = 0.06;
-    waveRing.position.set(0, 0.2, -13.5);
-    scene.add(waveRing);
+    // bokeh glints
+    const bokeh = [];
+    for (let i = 0; i < 5; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: bokehTex, color: i % 2 ? 0x8b5cf6 : 0x67e8f9, transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending }));
+      const th = Math.random() * TWO_PI, ph = Math.acos(Math.random() * 1.6 - 0.6);
+      s.position.set(Math.sin(ph) * Math.cos(th) * 28, Math.cos(ph) * 22, Math.sin(ph) * Math.sin(th) * 28 - 10);
+      s.scale.set(1.7, 1.7, 1);
+      scene.add(s);
+      bokeh.push(s);
+    }
 
-    let surge = 0, surgeAt = 3.2, nextWave = 6.0, waveT = -99, frameN = 0;
+    // nebulae — breathing gas clouds
+    const nebDefs = [
+      { x: -6,   y: 2.4, z: -16, s: 11, c: 0x2dd4f7, o: 0.16 },
+      { x: 6.5,  y: -1.6, z: -18, s: 13, c: 0x8b5cf6, o: 0.15 },
+      { x: 0.5,  y: 3.6, z: -24, s: 16, c: 0x23203a, o: 0.22 },
+      { x: -8,   y: -3.4, z: -20, s: 12, c: 0xc084fc, o: 0.07 },
+      { x: 9,    y: 0.4, z: -26, s: 14, c: 0x0ea5e9, o: 0.1 },
+    ];
+    const nebs = [];
+    for (const d of nebDefs) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebTex, color: d.c, transparent: true, opacity: d.o, depthWrite: false, blending: THREE.AdditiveBlending }));
+      s.position.set(d.x, d.y, d.z);
+      s.scale.set(d.s, d.s, 1);
+      scene.add(s);
+      nebs.push({ s: s, ph: Math.random() * TWO_PI, base: d.s, baseO: d.o });
+    }
+
+    // distant spiral galaxy
+    let gal = null;
+    (function makeGalaxy() {
+      const c = document.createElement('canvas'); c.width = 256; c.height = 160;
+      const g = c.getContext('2d');
+      for (let a = 0; a < 6.283; a += 0.05) {
+        const r0 = 9 + a * 11 + Math.sin(a * 3) * 9;
+        for (let k = 0; k < 6; k++) {
+          g.fillStyle = 'rgba(190,220,255,' + (0.5 - k * 0.06).toFixed(2) + ')';
+          g.beginPath();
+          g.arc(128 + Math.cos(a) * r0, 80 + Math.sin(a) * r0 * 0.4, 1 + k * 0.85, 0, 6.283);
+          g.fill();
+        }
+      }
+      gal = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending }));
+      gal.position.set(-14, 1.4, -32);
+      gal.scale.set(9, 5.6, 1);
+      scene.add(gal);
+    })();
+
+    // stylized ringed world — the centerpiece
+    const planetGeo = new THREE.IcosahedronGeometry(1.75, 4);
+    const pPos = planetGeo.attributes.position;
+    const pCol = new Float32Array(pPos.count * 3);
+    const deepC = new THREE.Color(0x0b3a55), landC = new THREE.Color(0x3b2f7a), glowC = new THREE.Color(0x14b8c4);
+    const tmpC2 = new THREE.Color();
+    for (let i = 0; i < pPos.count; i++) {
+      const x = pPos.getX(i), y = pPos.getY(i), z = pPos.getZ(i);
+      const h = Math.sin(x * 2.1) * Math.cos(z * 1.7) * Math.sin(y * 2.6 + 1.2);
+      tmpC2.copy(h > 0.05 ? landC : deepC);
+      tmpC2.lerp(glowC, Math.max(0, Math.sin(h * 5)));
+      pCol[i * 3] = tmpC2.r; pCol[i * 3 + 1] = tmpC2.g; pCol[i * 3 + 2] = tmpC2.b;
+    }
+    planetGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+    planetGeo.computeVertexNormals();
+    const planet = new THREE.Mesh(planetGeo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.9 }));
+    planet.position.set(3.4, 0.1, -12);
+    scene.add(planet);
+
+    // city lights on the surface
+    const lightsN = 240;
+    const lg = new THREE.BufferGeometry();
+    const lp2 = new Float32Array(lightsN * 3);
+    for (let i = 0; i < lightsN; i++) {
+      const th = Math.random() * TWO_PI, ph = Math.acos(Math.random() * 2 - 1);
+      lp2[i * 3] = 1.76 * Math.sin(ph) * Math.cos(th);
+      lp2[i * 3 + 1] = 1.76 * Math.cos(ph);
+      lp2[i * 3 + 2] = 1.76 * Math.sin(ph) * Math.sin(th);
+    }
+    lg.setAttribute('position', new THREE.BufferAttribute(lp2, 3));
+    const cityLights = new THREE.Points(lg, new THREE.PointsMaterial({ color: 0x9ff3ff, size: 0.032, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending }));
+    planet.add(cityLights);
+
+    // rings
+    const ring = new THREE.Mesh(new THREE.RingGeometry(2.3, 3.6, 96), new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }));
+    ring.rotation.x = Math.PI / 2.15;
+    ring.rotation.z = 0.42;
+    planet.add(ring);
+    const ring2 = new THREE.Mesh(new THREE.RingGeometry(2.0, 2.18, 96), new THREE.MeshBasicMaterial({ color: 0x2dd4f7, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }));
+    ring2.rotation.copy(ring.rotation);
+    planet.add(ring2);
+
+    // atmosphere halo
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebTex, color: 0x67e8f9, transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending }));
+    halo.scale.set(7.4, 7.4, 1);
+    halo.position.copy(planet.position);
+    scene.add(halo);
+
+    // shooting star
+    const meteorGeo = new THREE.BufferGeometry();
+    meteorGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+    const meteorMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const meteorLine = new THREE.Line(meteorGeo, meteorMat);
+    scene.add(meteorLine);
+    let meteor = { active: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, age: 0 };
+
+    // drifting dust motes
+    const dustN = 90;
+    const dGeo = new THREE.BufferGeometry();
+    const dPos = new Float32Array(dustN * 3);
+    for (let i = 0; i < dustN; i++) {
+      dPos[i * 3] = rand(-11, 11); dPos[i * 3 + 1] = rand(-3, 4); dPos[i * 3 + 2] = rand(-24, -2);
+    }
+    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+    const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({ color: 0xbfd4ff, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+
+    let pulse = 0, nextMeteor = 5, frameN = 0;
     const hudEl = document.getElementById('hudFrame');
-    hero.addEventListener('pointerdown', function () { surge = Math.min(surge + 1.4, 2.6); }, { passive: true });
-
-    // warp streak lines
-    const lineN = 220;
-    const linePos = new Float32Array(lineN * 6);
-    const lineDat = [];
-    for (let i = 0; i < lineN; i++) {
-      const a = Math.random() * TWO_PI, r = Math.pow(Math.random(), 0.5) * 3.6;
-      lineDat.push({ x: Math.cos(a) * r, y: Math.sin(a) * r, z: rand(-24, 6), v: rand(0.18, 0.45), len: rand(0.14, 0.34) });
-    }
-    const lGeo = new THREE.BufferGeometry();
-    lGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
-    const lMat = new THREE.LineBasicMaterial({ color: 0x9adfff, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false });
-    const streakLines = new THREE.LineSegments(lGeo, lMat);
-    scene.add(streakLines);
-
-    // slow drifting specks
-    const specN = 130;
-    const spGeo = new THREE.BufferGeometry();
-    const spPos = new Float32Array(specN * 3);
-    for (let i = 0; i < specN; i++) {
-      const a = Math.random() * TWO_PI, r = Math.pow(Math.random(), 0.4) * 4.2;
-      spPos[i * 3] = Math.cos(a) * r;
-      spPos[i * 3 + 1] = Math.sin(a) * r * 0.8;
-      spPos[i * 3 + 2] = rand(-24, 6);
-    }
-    spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3));
-    const spMat = new THREE.PointsMaterial({ color: 0xc9d8ff, size: 0.045, transparent: true, opacity: 0.7, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false });
-    const specks = new THREE.Points(spGeo, spMat);
-    scene.add(specks);
-
-    let flow = 1, camRoll = 0;
+    hero.addEventListener('pointerdown', function () { pulse = 1; }, { passive: true });
         const mouse = { x: 0, y: 0 };
     hero.addEventListener('mousemove', function (e) {
       const r = hero.getBoundingClientRect();
@@ -1771,85 +1846,57 @@
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
-      // ── flow: warp in, then a living glide with surge pulses ──
-      const baseFlow = t > 3.8 ? 0.42 : 1;
-      if (t >= surgeAt) { surgeAt = t + rand(6, 9); surge = 1; }
-      surge *= 0.985;
-      const fTarget = Math.min(baseFlow + surge * 1.6, 3);
-      flow += (fTarget - flow) * 0.03;
+      const slow = t * 0.05;
+      pulse *= 0.96;
 
-      // rings: glide + counter-spin + elliptical breathing
-      for (let i = 0; i < rings.length; i++) {
-        const rg = rings[i];
-        rg.g.position.z += 0.34 * flow;
-        rg.g.rotation.z += rg.spin * 0.06;
-        const br = 1 + Math.sin(t * 0.9 + i * 0.55) * 0.035;
-        rg.g.scale.set(br, br, 1);
-        if (rg.g.position.z > 2.2) rg.g.position.z = rg.z0 - 26;
+      // sky breathing
+      starA.material.opacity = 0.75 + 0.25 * Math.sin(t * 0.8);
+      starB.material.opacity = 0.7 + 0.3 * Math.sin(t * 1.1 + 2);
+      for (let i = 0; i < bokeh.length; i++) {
+        bokeh[i].material.opacity = Math.min(1, 0.35 + 0.3 * Math.sin(t * (0.5 + i * 0.07) + i * 1.7) + pulse * 0.3);
       }
-      // shared ring shimmer
-      ringMatA.opacity = 0.5 + Math.sin(t * 1.1) * 0.1;
-      ringMatB.opacity = 0.35 + Math.sin(t * 1.6 + 1) * 0.1;
-      ringMatC.opacity = 0.18 + Math.sin(t * 2.1 + 2) * 0.08;
-
-      // streaks — speed-linked length and glow
-      streakLines.material.opacity = 0.4 + flow * 0.35;
-      const lp = streakLines.geometry.attributes.position.array;
-      for (let i = 0; i < lineN; i++) {
-        const d = lineDat[i];
-        d.z += d.v * flow;
-        if (d.z > 2.4) {
-          const a2 = Math.random() * TWO_PI, r2 = Math.pow(Math.random(), 0.5) * 3.6;
-          d.x = Math.cos(a2) * r2; d.y = Math.sin(a2) * r2; d.z = -24;
-        }
-        lp[i * 6] = d.x; lp[i * 6 + 1] = d.y; lp[i * 6 + 2] = d.z;
-        lp[i * 6 + 3] = d.x; lp[i * 6 + 4] = d.y; lp[i * 6 + 5] = d.z + d.len * (0.7 + flow);
+      for (let i = 0; i < nebs.length; i++) {
+        const nb = nebs[i];
+        const b = 1 + Math.sin(t * 0.22 + nb.ph) * 0.06;
+        nb.s.scale.set(nb.base * b, nb.base * b, 1);
+        nb.s.material.opacity = Math.min(0.5, nb.baseO * (0.8 + 0.35 * Math.sin(t * 0.3 + nb.ph)) + pulse * 0.18);
       }
-      streakLines.geometry.attributes.position.needsUpdate = true;
+      gal.material.rotation = t * 0.02;
 
-      // specks
-      const spArr = specks.geometry.attributes.position.array;
-      for (let i = 0; i < specN; i++) {
-        spArr[i * 3 + 2] += 0.014 * flow;
-        if (spArr[i * 3 + 2] > 2) spArr[i * 3 + 2] = -24;
+      // planet — slow spin, gentle wobble
+      planet.rotation.y += 0.0016;
+      planet.rotation.z = Math.sin(t * 0.12) * 0.02;
+      ring.rotation.z = 0.42 + Math.sin(t * 0.1) * 0.02;
+      halo.scale.setScalar(7.4 * (1 + Math.sin(t * 0.17) * 0.04 + pulse * 0.1) );
+      halo.material.opacity = Math.min(0.6, 0.22 + pulse * 0.25);
+
+      // shooting star
+      if (meteor.active) {
+        meteor.age += 0.016;
+        meteor.x += meteor.vx; meteor.y += meteor.vy;
+        const mp = meteorGeo.attributes.position.array;
+        mp[0] = meteor.x; mp[1] = meteor.y; mp[2] = meteor.z;
+        mp[3] = meteor.x - meteor.vx * 0.45; mp[4] = meteor.y - meteor.vy * 0.45; mp[5] = meteor.z;
+        meteorGeo.attributes.position.needsUpdate = true;
+        meteorMat.opacity = Math.max(0, Math.sin(Math.PI * Math.min(1, meteor.age / 1.4))) * 0.9;
+        if (meteor.age >= 1.4) { meteor.active = false; meteorMat.opacity = 0; nextMeteor = t + rand(9, 15); }
+      } else if (t >= nextMeteor) {
+        const sx = rand(-9, 9), sy = rand(3.2, 4.6), sz = rand(-22, -13);
+        meteor = { active: true, x: sx, y: sy, z: sz, vx: -0.14 * rand(0.8, 1.3), vy: -0.12 * rand(0.8, 1.3), age: 0 };
       }
-      specks.geometry.attributes.position.needsUpdate = true;
 
-      // gyroscope lattice spins around the core
-      gim1.rotation.x += 0.006; gim1.rotation.y += 0.004;
-      gim2.rotation.y += 0.009; gim2.rotation.z += 0.005;
-      gim3.rotation.x -= 0.004; gim3.rotation.z += 0.007;
+      // dust motes drift
+      const dp = dust.geometry.attributes.position.array;
+      for (let i = 0; i < dustN; i++) {
+        dp[i * 3 + 1] += 0.0008 * (1 + pulse);
+        if (dp[i * 3 + 1] > 4) dp[i * 3 + 1] = -3;
+      }
+      dust.geometry.attributes.position.needsUpdate = true;
 
-      // shockwave ring ripples down the tunnel
-      if (t >= nextWave) { nextWave = t + rand(7, 10); waveT = t; }
-      const wp = 1 - Math.min(1, (t - waveT) / 1.5);
-      if (wp > 0) {
-        const ease = 1 - Math.pow(1 - wp, 3);
-        waveRing.position.z = -13.5 + 15.5 * ease;
-        waveRing.scale.setScalar(0.4 + 5.6 * ease);
-        waveRing.material.opacity = Math.sin(Math.PI * wp) * 0.55;
-      } else { waveRing.material.opacity = 0; }
-
-      // core — pulsing, parallax, violet counter-glow
-      const pulse = 1 + Math.sin(t * 0.9) * 0.14;
-      coreGlow.scale.set(10 * pulse, 10 * pulse, 1);
-      coreGlow.position.x = mouse.x * 0.5;
-      coreGlow.position.y = 0.2 + mouse.y * 0.3;
-      coreGlow.material.opacity = 0.75 + Math.sin(t * 1.3) * 0.25;
-      coreGlow2.position.x = coreGlow.position.x;
-      coreGlow2.position.y = coreGlow.position.y;
-      coreGlow2.scale.set(7 + Math.sin(t * 1.7 + 2) * 1.2, 7 + Math.sin(t * 1.7 + 2) * 1.2, 1);
-      coreGlow2.material.opacity = 0.25 + 0.2 * (0.5 + 0.5 * Math.sin(t * 1.9));
-      gyro.position.x = coreGlow.position.x;
-      gyro.position.y = coreGlow.position.y;
-
-      // camera: parallax, roll, FOV breathing
-      camRoll += (Math.sin(t * 0.07) * 0.035 - camRoll) * 0.02;
-      camera.position.set(mouse.x * 0.9, 0.2 + mouse.y * 0.5 + Math.sin(t * 0.5) * 0.035, 2);
-      camera.fov = 55 + Math.sin(t * 0.55) * 1.1;
-      camera.updateProjectionMatrix();
-      camera.lookAt(0, 0.15, -8);
-      camera.rotateZ(camRoll);
+      // camera — calm swivel
+      camera.position.set(Math.sin(slow) * 0.9 + mouse.x * 0.4, 0.15 + Math.cos(slow * 0.6) * 0.35 + mouse.y * 0.25, 6.6);
+      camera.lookAt(0, 0.1, -10);
+      camera.rotateZ(Math.sin(slow * 0.5) * 0.012);
 
       // live telemetry
       frameN = (frameN + 1) % 1000000;
