@@ -299,6 +299,14 @@
   .boot-bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.08); margin-top: 1.2rem; overflow: hidden; }
   .boot-bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ember), var(--accent)); box-shadow: 0 0 12px rgba(233,161,59,.5); }
   .boot-skip { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: .95rem; text-align: center; }
+  .boot-pct { font-family: var(--display); font-weight: 700; font-size: 1.7rem; color: var(--accent); text-align: right; margin-top: .5rem; line-height: 1; }
+  #cbTop, #cbBottom { position: fixed; left: 0; right: 0; height: 9vh; background: #050506; z-index: 215; pointer-events: none; transition: transform 1s var(--ease); }
+  #cbTop { top: 0; transform: translateY(-110%); }
+  #cbBottom { bottom: 0; transform: translateY(110%); }
+  body.bars-in #cbTop { transform: translateY(0); }
+  body.bars-in #cbBottom { transform: translateY(0); }
+  body.bars-up #cbTop { transform: translateY(-110%); }
+  body.bars-up #cbBottom { transform: translateY(110%); }
   .caret { color: var(--accent); animation: blink 1s steps(2) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
   #victory { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; pointer-events: none; }
@@ -564,12 +572,17 @@
 </head>
 <body>
 
+<!-- cinematic letterbox bars (trailer frame during the lobby) -->
+<div id="cbTop" aria-hidden="true"></div>
+<div id="cbBottom" aria-hidden="true"></div>
+
 <!-- matchmaking intro — first visit only -->
 <div id="boot" aria-hidden="true">
   <div class="boot-card">
     <div class="boot-title">RUDRA_PATEL <span>// LOBBY</span></div>
     <div class="boot-line">MAP: PORTFOLIO</div>
     <div class="boot-bar"><span></span></div>
+    <div class="boot-pct">0%</div>
     <div class="boot-skip">click to skip</div>
   </div>
 </div>
@@ -591,8 +604,8 @@
     <nav>
       <a class="brand" href="#top">rudra<span>.</span>patel</a>
       <div class="nav-links">
-        <a href="#work">Work</a>
         <a href="#experience">Experience</a>
+        <a href="#work">Work</a>
         <a href="#skills">Skills</a>
         <a class="cta" href="#contact">Say hi</a>
       </div>
@@ -697,76 +710,6 @@
     </div>
   </section>
 
-  <!-- ═══ WORK ═══ -->
-  <section class="section" id="work">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <h2>Selected work</h2>
-        <span class="kicker">2024 — 2026</span>
-      </div>
-      <div class="work-grid">
-
-        <a class="card c1 reveal" style="--d:0s" href="https://github.com/Rudra5417/stormglass" target="_blank" rel="noopener">
-          <div class="card-visual">
-            <span class="cv-label">Island Analytics</span>
-            <span class="cv-num">01</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>Stormglass <span class="arrow">→</span></h3>
-            <div class="meta">Fortnite / UEFN · <b>2025</b></div>
-            <p>Public Fortnite Creative / UEFN island analytics — the same surface-health rigor I run in my day job, packaged for the creator community. Not affiliated with Epic Games.</p>
-            <div class="tags"><span class="tag">TypeScript</span><span class="tag">Fortnite / UEFN</span><span class="tag">Analytics</span></div>
-          </div>
-        </a>
-
-        <a class="card c2 reveal" style="--d:.08s" href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">
-          <div class="card-visual">
-            <span class="cv-label">Natural Language → Code</span>
-            <span class="cv-num">02</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>Code Generator — GPT-3 <span class="arrow">→</span></h3>
-            <div class="meta">LLM Pipeline · <b>14★</b></div>
-            <p>My most-starred project: plain-English instructions turned into working code with an early GPT-3 pipeline.</p>
-            <div class="tags"><span class="tag">GPT-3</span><span class="tag">Python</span><span class="tag">Jupyter</span></div>
-          </div>
-        </a>
-
-        <a class="card c3 reveal" style="--d:0s" href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">
-          <div class="card-visual">
-            <span class="cv-label">Document Intelligence</span>
-            <span class="cv-num">03</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>DocBot <span class="arrow">→</span></h3>
-            <div class="meta">LLM Q&A Chatbot · <b>2025</b></div>
-            <p>Advanced Q&A over documents: PDFs in, precise answers out — text extraction, embeddings, and LLM response generation in one pipeline.</p>
-            <div class="tags"><span class="tag">Python</span><span class="tag">LLMs</span><span class="tag">Embeddings</span></div>
-          </div>
-        </a>
-
-        <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
-        <a class="card c4 reveal" style="--d:.08s" href="https://github.com/Rudra5417" target="_blank" rel="noopener">
-          <div class="card-visual">
-            <span class="cv-label">Grid Optimization</span>
-            <span class="cv-num">04</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>Wattpath <span class="arrow">→</span></h3>
-            <div class="meta">Energy Scheduling · <b>2026 — now</b></div>
-            <p>Constraint-aware demand-side scheduler that shifts flexible compute and industrial loads into cheaper, cleaner grid windows — 21% lower cost, 15% less carbon, zero deadline misses.</p>
-            <div class="tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Optimization</span></div>
-          </div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
   <!-- ═══ EXPERIENCE ═══ -->
   <section class="section" id="experience">
     <div class="wrap">
@@ -842,6 +785,76 @@
             <p class="desc">My first real taste of ML at scale — teaching neural networks to clear surveillance footage distorted by atmospheric turbulence.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ WORK ═══ -->
+  <section class="section" id="work">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>Selected work</h2>
+        <span class="kicker">2024 — 2026</span>
+      </div>
+      <div class="work-grid">
+
+        <a class="card c1 reveal" style="--d:0s" href="https://github.com/Rudra5417/stormglass" target="_blank" rel="noopener">
+          <div class="card-visual">
+            <span class="cv-label">Island Analytics</span>
+            <span class="cv-num">01</span>
+            <i class="cv-f"></i>
+          </div>
+          <div class="card-body">
+            <h3>Stormglass <span class="arrow">→</span></h3>
+            <div class="meta">Fortnite / UEFN · <b>2025</b></div>
+            <p>Public Fortnite Creative / UEFN island analytics — the same surface-health rigor I run in my day job, packaged for the creator community. Not affiliated with Epic Games.</p>
+            <div class="tags"><span class="tag">TypeScript</span><span class="tag">Fortnite / UEFN</span><span class="tag">Analytics</span></div>
+          </div>
+        </a>
+
+        <a class="card c2 reveal" style="--d:.08s" href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">
+          <div class="card-visual">
+            <span class="cv-label">Natural Language → Code</span>
+            <span class="cv-num">02</span>
+            <i class="cv-f"></i>
+          </div>
+          <div class="card-body">
+            <h3>Code Generator — GPT-3 <span class="arrow">→</span></h3>
+            <div class="meta">LLM Pipeline · <b>14★</b></div>
+            <p>My most-starred project: plain-English instructions turned into working code with an early GPT-3 pipeline.</p>
+            <div class="tags"><span class="tag">GPT-3</span><span class="tag">Python</span><span class="tag">Jupyter</span></div>
+          </div>
+        </a>
+
+        <a class="card c3 reveal" style="--d:0s" href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">
+          <div class="card-visual">
+            <span class="cv-label">Document Intelligence</span>
+            <span class="cv-num">03</span>
+            <i class="cv-f"></i>
+          </div>
+          <div class="card-body">
+            <h3>DocBot <span class="arrow">→</span></h3>
+            <div class="meta">LLM Q&A Chatbot · <b>2025</b></div>
+            <p>Advanced Q&A over documents: PDFs in, precise answers out — text extraction, embeddings, and LLM response generation in one pipeline.</p>
+            <div class="tags"><span class="tag">Python</span><span class="tag">LLMs</span><span class="tag">Embeddings</span></div>
+          </div>
+        </a>
+
+        <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
+        <a class="card c4 reveal" style="--d:.08s" href="https://github.com/Rudra5417" target="_blank" rel="noopener">
+          <div class="card-visual">
+            <span class="cv-label">Grid Optimization</span>
+            <span class="cv-num">04</span>
+            <i class="cv-f"></i>
+          </div>
+          <div class="card-body">
+            <h3>Wattpath <span class="arrow">→</span></h3>
+            <div class="meta">Energy Scheduling · <b>2026 — now</b></div>
+            <p>Constraint-aware demand-side scheduler that shifts flexible compute and industrial loads into cheaper, cleaner grid windows — 21% lower cost, 15% less carbon, zero deadline misses.</p>
+            <div class="tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Optimization</span></div>
+          </div>
+        </a>
+
       </div>
     </div>
   </section>
@@ -1060,12 +1073,29 @@
     const lines = ['MAP: PORTFOLIO', 'SKIN: OPERATOR', 'FOUND: VISITOR', 'SEASON 7.3 — RUNNERS'];
     const lbl = boot.querySelector('.boot-line');
     const bar = boot.querySelector('.boot-bar span');
+    const pct = boot.querySelector('.boot-pct');
+    const tb = performance.now();
     let i = 0, doneB = false;
     const lblInt = setInterval(() => { i += 1; if (lbl) lbl.textContent = lines[i % lines.length]; }, 340);
+    const pctInt = setInterval(() => {
+      const p = Math.min(1, (performance.now() - tb) / 1500);
+      if (pct) pct.textContent = Math.round(p * 100) + '%';
+      if (p >= 1) clearInterval(pctInt);
+    }, 70);
+    document.body.classList.add('bars-in');
     const finish = () => {
-      if (doneB) return; doneB = true; clearInterval(lblInt);
+      if (doneB) return; doneB = true; clearInterval(lblInt); clearInterval(pctInt);
       boot.classList.add('done');
-      setTimeout(() => { try { localStorage.setItem('rp_boot', '1'); } catch (e) {} boot.remove(); }, 550);
+      document.body.classList.remove('bars-in');
+      document.body.classList.add('bars-up');
+      setTimeout(() => {
+        try { localStorage.setItem('rp_boot', '1'); } catch (e) {}
+        boot.remove();
+      }, 550);
+      setTimeout(() => {
+        const t = document.getElementById('cbTop'), b = document.getElementById('cbBottom');
+        if (t) t.remove(); if (b) b.remove();
+      }, 1200);
     };
     requestAnimationFrame(() => {
       bar.style.transition = 'width 1.5s cubic-bezier(.22,.61,.36,1)';
@@ -1722,20 +1752,40 @@
       return group;
     }
     const isles = [
-      makeIsland({ x: 2.7, y: 0.15, z: -2.0, s: 1.0, ph: 0.4, rot: 0.5,  house: [0.5, 0.05],  tree: null,      fire: [-0.4, 0.35] }),
-      makeIsland({ x: -3.1, y: -1.0, z: -4.2, s: 0.78, ph: 1.9, rot: 2.1, house: null,        tree: [-0.45, 0.3], fire: null }),
-      makeIsland({ x: 4.6, y: -0.8, z: -5.4, s: 0.62, ph: 3.3, rot: 4.2, house: null,        tree: null,       fire: null }),
+      makeIsland({ x: 2.3, y: 0.05, z: -1.7, s: 1.35, ph: 0.4, rot: 0.5,  house: [0.6, 0.1],   tree: null,       fire: [-0.5, 0.4] }),
+      makeIsland({ x: -3.6, y: -1.5, z: -5.0, s: 0.95, ph: 1.9, rot: 2.1, house: null,         tree: [-0.5, 0.35], fire: null }),
+      makeIsland({ x: 5.4, y: -1.1, z: -6.4, s: 0.8,  ph: 3.3, rot: 4.2, house: null,         tree: null,        fire: null }),
     ];
     for (const is of isles) scene.add(is);
+    // grand spires on the peaks — mountain-scale silhouettes
+    const spireMat = new THREE.MeshStandardMaterial({ color: 0x232030, flatShading: true });
+    const spireData = [
+      { i: 0, n: 4, spread: 1.1, h0: 0.8, h1: 1.8 },
+      { i: 1, n: 2, spread: 0.6, h0: 0.5, h1: 1.0 },
+      { i: 2, n: 2, spread: 0.5, h0: 0.4, h1: 0.85 },
+    ];
+    for (const sd of spireData) {
+      const grp = isles[sd.i];
+      for (let k = 0; k < sd.n; k++) {
+        const sh = rand(sd.h0, sd.h1) * grp.scale.x;
+        const spire = new THREE.Mesh(new THREE.ConeGeometry(sh * 0.11, sh, 6), spireMat);
+        const ang = rand(0, TWO_PI), rad = rand(0.2, sd.spread);
+        spire.position.set(Math.cos(ang) * rad, 0.42 + sh / 2, Math.sin(ang) * rad);
+        spire.rotation.z = rand(-0.05, 0.05); spire.rotation.x = rand(-0.05, 0.05);
+        grp.add(spire);
+      }
+    }
     const rockMat = new THREE.MeshStandardMaterial({ color: 0x2b2326, flatShading: true });
     for (let i = 0; i < 6; i++) {
-      const rm = new THREE.Mesh(new THREE.DodecahedronGeometry(rand(0.1, 0.22), 0), rockMat);
-      rm.position.set(rand(-5.5, 5.5), rand(-0.6, 1.9), rand(-7.5, -1.5));
+      const rm = new THREE.Mesh(new THREE.DodecahedronGeometry(rand(0.12, 0.26), 0), rockMat);
+      rm.position.set(rand(-6, 6), rand(-0.8, 2.2), rand(-8, -1.5));
       rm.rotation.set(rand(0, 3), rand(0, 3), rand(0, 3));
       scene.add(rm);
     }
 
     const cloudData = [];
+    const seaClouds = [];
+    const rays = [];
     (function makeClouds() {
       const c = document.createElement('canvas');
       c.width = c.height = 128;
@@ -1744,7 +1794,8 @@
       grad.addColorStop(0, 'rgba(130,124,144,.5)');
       grad.addColorStop(1, 'rgba(130,124,144,0)');
       g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
-      const cloudMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, opacity: 0.42, depthWrite: false });
+      const tex = new THREE.CanvasTexture(c);
+      const cloudMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.42, depthWrite: false });
       for (let i = 0; i < 7; i++) {
         const m = new THREE.Mesh(new THREE.PlaneGeometry(rand(2.4, 4.6), rand(1.3, 2.4)), cloudMat);
         m.position.set(rand(-8, 8), rand(-1.2, 2.6), rand(-9.5, -2.5));
@@ -1752,6 +1803,33 @@
         m.rotation.z = rand(0, Math.PI);
         scene.add(m);
         cloudData.push({ m: m, v: rand(0.002, 0.006), rot: rand(-0.005, 0.005) });
+      }
+      // sea of clouds — big drifting banks below the islands
+      const seaMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.5, depthWrite: false });
+      for (let i = 0; i < 10; i++) {
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(rand(6, 10), rand(3, 5)), seaMat);
+        m.position.set(rand(-9, 9), rand(-2.8, -2.0), rand(-10, -1));
+        m.rotation.x = -Math.PI / 2 + rand(-0.08, 0.08);
+        m.rotation.z = rand(0, Math.PI);
+        scene.add(m);
+        seaClouds.push({ m: m, v: rand(0.001, 0.003) });
+      }
+      // god-ray shafts sweeping from the upper left
+      const rayC = document.createElement('canvas');
+      rayC.width = 64; rayC.height = 256;
+      const rg = rayC.getContext('2d');
+      const rgrad = rg.createLinearGradient(0, 0, 0, 256);
+      rgrad.addColorStop(0, 'rgba(255,196,130,0)');
+      rgrad.addColorStop(.42, 'rgba(255,196,130,.16)');
+      rgrad.addColorStop(.55, 'rgba(255,196,130,0)');
+      rg.fillStyle = rgrad; rg.fillRect(0, 0, 64, 256);
+      const rayTex = new THREE.CanvasTexture(rayC);
+      for (let i = 0; i < 4; i++) {
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(rand(1.1, 2.2), rand(9, 14)), new THREE.MeshBasicMaterial({ map: rayTex, transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+        m.position.set(rand(-1.5, 1.8), rand(3.4, 5.2), rand(-7, -3.6));
+        m.rotation.z = rand(-0.28, -0.1);
+        scene.add(m);
+        rays.push({ m: m, rot: rand(-0.0012, 0.0012) });
       }
     })();
 
@@ -1793,8 +1871,8 @@
     storm.position.set(0, 0, -1.6);
     scene.add(storm);
 
-    let glider = null, loot = null;
-    const sched = { glider: 2.6, loot: 5.2, flash: 4.5 };
+    let glider = null;
+    const sched = { glider: 2.6, flash: 4.5 };
     let shakeAmp = 0, flashAmp = 0;
 
     const gliderMat = new THREE.MeshBasicMaterial({ color: 0xe9a13b, side: THREE.DoubleSide });
@@ -1812,15 +1890,6 @@
       scene.add(g);
       glider = { g: g, vy: 0.012, falling: true, tgt: target, tx: target.position.x, ty: target.position.y + 0.42, tz: target.position.z, ph: rand(0, 6.283) };
     }
-    function spawnLoot() {
-      const t = isles[Math.floor(Math.random() * isles.length)];
-      loot = { y: 5.5, vy: 0, tx: t.position.x, ty: t.position.y + 0.42, tz: t.position.z, landed: false, beam: 0, group: null };
-    }
-
-    const beamGeo = new THREE.CylinderGeometry(0.34, 0.55, 6, 12, 1, true);
-    const beamMat = new THREE.MeshBasicMaterial({ color: 0xe9a13b, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
-    const beam = new THREE.Mesh(beamGeo, beamMat);
-    scene.add(beam);
 
     const mouse = { x: 0, y: 0 };
     hero.addEventListener('mousemove', function (e) {
@@ -1837,7 +1906,6 @@
       const t = clock.getElapsedTime();
 
       if (!glider && t >= sched.glider) { spawnGlider(); sched.glider = t + rand(12, 16); }
-      if (!loot && t >= sched.loot) { spawnLoot(); sched.loot = t + rand(15, 19); }
       if (t >= sched.flash) { sched.flash = t + rand(7, 10); flashAmp = 1; }
 
       if (glider) {
@@ -1860,31 +1928,6 @@
         }
       }
 
-      if (loot) {
-        const lt = loot;
-        if (!lt.landed) {
-          lt.vy += 0.016; lt.y -= lt.vy * 0.3;
-          if (lt.y <= lt.ty) { lt.landed = true; lt.beam = 1; shakeAmp = 0.4; }
-          if (!lt.group) {
-            const box = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshStandardMaterial({ color: 0x232228, roughness: 0.6 }));
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(0.205, 0.205, 0.205), new THREE.MeshBasicMaterial({ color: 0xe9a13b, wireframe: true }));
-            lt.group = new THREE.Group(); lt.group.add(box, frame);
-            lt.group.position.set(lt.tx, lt.y, lt.tz);
-            scene.add(lt.group);
-          } else {
-            lt.group.position.y = lt.y;
-            lt.group.rotation.y += 0.02;
-          }
-        } else {
-          lt.beam -= 0.014;
-          if (lt.beam <= 0 && lt.group) { scene.remove(lt.group); loot = null; }
-        }
-        if (lt.beam > 0) {
-          beam.position.set(lt.tx, lt.y - 3, lt.tz);
-          beam.material.opacity = 0.10 * lt.beam;
-        } else { beam.material.opacity = 0; }
-      }
-
       bus.position.x = 8.4 - (t * 0.38) % 17;
       bus.position.y = 3.7 + Math.sin(t * 0.7) * 0.14;
 
@@ -1900,6 +1943,11 @@
         if (cb.m.position.x > 10) cb.m.position.x = -10;
         cb.m.rotation.z += cb.rot;
       }
+      for (const sc of seaClouds) {
+        sc.m.position.x += sc.v * 3;
+        if (sc.m.position.x > 11) sc.m.position.x = -11;
+      }
+      for (const r of rays) { r.m.rotation.z += r.rot; }
 
       const ep = embers.geometry.attributes.position;
       for (let i = 0; i < embN; i++) {
@@ -1922,9 +1970,13 @@
       const camZ = 7.4 - 3.0 * (1 - Math.pow(1 - push, 3));
       shakeAmp *= 0.9;
       const shx = (Math.random() - 0.5) * shakeAmp, shy = (Math.random() - 0.5) * shakeAmp;
-      const orbit = Math.sin(t * 0.05) * 1.15;
-      camera.position.set(mouse.x * 0.7 + orbit + shx, 1.15 + mouse.y * 0.35 + Math.sin(t * 0.4) * 0.06 + shy, camZ);
-      camera.lookAt(orbit * 0.6 + mouse.x * 0.6, 0.32, 0);
+      // cinematic dolly: slow arc, gentle rise, subtle roll
+      const a = t * 0.02;
+      const camX = Math.sin(a) * 1.6 + mouse.x * 0.55 + shx;
+      const camY = 1.05 + Math.sin(a * 0.6) * 0.22 + push * 0.55 + mouse.y * 0.3 + shy;
+      camera.position.set(camX, camY, camZ);
+      camera.lookAt(Math.sin(a * 0.5) * 0.8 + mouse.x * 0.5, 0.6, -1.2);
+      camera.rotateZ(Math.sin(a * 0.7) * 0.008);
 
       renderer.render(scene, camera);
     }
