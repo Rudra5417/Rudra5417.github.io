@@ -257,6 +257,7 @@
   #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
   .hero-grade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse 72% 62% at 50% 46%, rgba(5,6,10,.6), transparent 62%), linear-gradient(180deg, rgba(5,6,10,.55), transparent 28%, transparent 68%, rgba(5,6,10,.62)); }
   .hud { position: absolute; right: var(--pad); bottom: 1.3rem; z-index: 3; display: flex; align-items: center; gap: .55rem; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: var(--faint); }
+  .squig { display: block; width: min(300px, 42%); margin-top: .7rem; color: var(--accent); filter: drop-shadow(0 0 6px rgba(45,212,247,.4)); }
   .hud .hud-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,.8); animation: pulse 1.6s infinite; }
   .hud .hud-f { color: var(--muted); }
   #fx-canvas { position: fixed; inset: 0; z-index: 180; pointer-events: none; }
@@ -596,6 +597,7 @@
         <span class="w" style="--i:2">Live</span> <span class="w" style="--i:3">data.</span>
         <span class="w accent" style="--i:4">No</span> <span class="w accent" style="--i:5">guesswork.</span>
       </h1>
+      <svg class="squig" viewBox="0 0 220 22" aria-hidden="true"><path d="M3 15 Q 30 3 58 12 T 116 11 T 174 14 T 217 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity="0.9"/></svg>
       <div class="role">Rudra Patel — <span id="type">Discover Operations Manager · Epic Games</span><span class="caret">▌</span> · Los Angeles</div>
       <p class="intro">
         I run <strong>live operations for Fortnite Discover</strong> at Epic Games — 35+ content
@@ -1142,37 +1144,69 @@
 <script>
 (function () {
   'use strict';
-  // realistic cosmos: a baked starfield across the entire page
-  (function pageStars() {
-    var cv = document.createElement('canvas'); cv.width = 512; cv.height = 512;
+  // ── black-paper ink sketch: constellations, doodles, hatch — drawn, not rendered ──
+  (function inkPaper() {
+    var S = 640, cv = document.createElement('canvas');
+    cv.width = cv.height = S;
     var g = cv.getContext('2d');
-    var sky = g.createRadialGradient(256, 256, 40, 256, 256, 420);
-    sky.addColorStop(0, 'rgba(9,10,16,1)');
-    sky.addColorStop(1, 'rgba(4,5,8,1)');
-    g.fillStyle = sky; g.fillRect(0, 0, 512, 512);
-    for (var i = 0; i < 240; i++) {
-      var b = Math.pow(Math.random(), 2.4);
-      var r = 0.3 + b * 1.6;
-      var x = Math.random() * 512, y = Math.random() * 512;
-      var warm = Math.random() < 0.22;
-      var col = warm ? '255,236,214' : '208,220,255';
-      var a = 0.22 + b * 0.7;
-      if (b > 0.5) {
-        var gr = g.createRadialGradient(x, y, 0, x, y, r * 4);
-        gr.addColorStop(0, 'rgba(' + col + ',' + (a * 0.5).toFixed(3) + ')');
-        gr.addColorStop(1, 'rgba(' + col + ',0)');
-        g.fillStyle = gr;
-        g.fillRect(x - r * 4, y - r * 4, r * 8, r * 8);
+    g.fillStyle = '#08080c';
+    g.fillRect(0, 0, S, S);
+    // paper grain — faint mottling
+    for (var i = 0; i < 900; i++) {
+      g.fillStyle = 'rgba(255,255,255,' + (Math.random() * 0.025).toFixed(3) + ')';
+      g.fillRect(Math.random() * S, Math.random() * S, 1.1, 1.1);
+    }
+    function ink(a) { return 'rgba(226,232,240,' + a.toFixed(3) + ')'; }
+    function line(pts, w, a) {
+      g.strokeStyle = ink(a);
+      g.lineWidth = w;
+      g.lineCap = 'round';
+      g.lineJoin = 'round';
+      g.beginPath();
+      g.moveTo(pts[0][0], pts[0][1]);
+      for (var i = 1; i < pts.length; i++) {
+        var mx = (pts[i - 1][0] + pts[i][0]) / 2 + (Math.random() - 0.5) * 7;
+        var my = (pts[i - 1][1] + pts[i][1]) / 2 + (Math.random() - 0.5) * 7;
+        g.quadraticCurveTo(mx, my, pts[i][0], pts[i][1]);
       }
-      g.fillStyle = 'rgba(' + col + ',' + a.toFixed(3) + ')';
+      g.stroke();
+    }
+    function dot(x, y, r, a) {
+      g.fillStyle = ink(a);
       g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
     }
+    // constellations — kept clear of the tile edges so it tiles seamlessly
+    for (var c = 0; c < 5; c++) {
+      var cx = 70 + Math.random() * (S - 140), cy = 70 + Math.random() * (S - 140);
+      var pts = [[cx, cy]];
+      var n = 3 + Math.floor(Math.random() * 3);
+      for (var k = 0; k < n; k++) {
+        pts.push([cx + (Math.random() - 0.5) * 180, cy + (Math.random() - 0.5) * 130]);
+      }
+      line(pts, 0.8, 0.10 + Math.random() * 0.06);
+      for (var p = 0; p < pts.length; p++) dot(pts[p][0], pts[p][1], 1 + Math.random() * 1.2, 0.15 + Math.random() * 0.12);
+    }
+    // contour doodles — wobbly closed loops
+    for (var d = 0; d < 4; d++) {
+      var ox = 70 + Math.random() * (S - 140), oy = 70 + Math.random() * (S - 140);
+      var R = 14 + Math.random() * 62;
+      var pts2 = [];
+      for (var a2 = 0; a2 <= 6.4; a2 += 0.35) {
+        pts2.push([ox + Math.cos(a2) * R * (1 + (Math.random() - 0.5) * 0.3), oy + Math.sin(a2) * R * (1 + (Math.random() - 0.5) * 0.3)]);
+      }
+      line(pts2, 0.7, 0.05 + Math.random() * 0.05);
+    }
+    // scattered hatch ticks
+    for (var h = 0; h < 24; h++) {
+      var hx = 40 + Math.random() * (S - 80), hy = 40 + Math.random() * (S - 80);
+      line([[hx, hy], [hx + (Math.random() - 0.5) * 16, hy + (Math.random() - 0.5) * 16]], 0.6, 0.04);
+    }
     document.body.style.backgroundImage = 'url(' + cv.toDataURL('image/png') + ')';
-    document.body.style.backgroundSize = '512px 512px';
+    document.body.style.backgroundSize = '640px 640px';
     document.body.style.backgroundAttachment = 'fixed';
   })();
 
-  // hero: the bright ones, gently twinkling
+  // ── hero: a few larger hand-drawn constellations with softly twinkling nodes ──
   var hero = document.querySelector('.hero');
   var cv2 = document.getElementById('hero-canvas');
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1189,27 +1223,48 @@
     }
     resize();
     if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
-    var stars = [];
-    for (var k = 0; k < 110; k++) {
-      stars.push({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random() * 1.8, b: 0.35 + Math.random() * 0.65, ph: Math.random() * 6.283, sp: 0.35 + Math.random() * 1.1, warm: Math.random() < 0.2 });
+    function mkConstellation() {
+      var cx = 0.12 + Math.random() * 0.62, cy = 0.1 + Math.random() * 0.62;
+      var pts = [[cx, cy]];
+      var n = 3 + Math.floor(Math.random() * 4);
+      for (var k = 0; k < n; k++) {
+        var px = Math.min(0.92, Math.max(0.08, cx + (Math.random() - 0.5) * 0.5));
+        var py = Math.min(0.9, Math.max(0.06, cy + (Math.random() - 0.5) * 0.36));
+        pts.push([px, py]);
+      }
+      return pts;
+    }
+    var consts = [];
+    for (var ci = 0; ci < 4; ci++) consts.push(mkConstellation());
+    var nodes = [];
+    for (var cc = 0; cc < consts.length; cc++) {
+      for (var nn = 0; nn < consts[cc].length; nn++) {
+        nodes.push({ x: consts[cc][nn][0], y: consts[cc][nn][1], ph: Math.random() * 6.283, sp: 0.4 + Math.random() * 0.8 });
+      }
     }
     function frame(t) {
       ctx.clearRect(0, 0, W, H);
       var el = t / 1000;
-      for (var i = 0; i < stars.length; i++) {
-        var s = stars[i];
-        var a = s.b * (0.7 + 0.3 * Math.sin(el * s.sp + s.ph));
-        var x = s.x * W, y = s.y * H;
-        var col = s.warm ? '255,240,220' : '224,235,255';
-        if (s.r > 1.3) {
-          var gr = ctx.createRadialGradient(x, y, 0, x, y, s.r * 3.4);
-          gr.addColorStop(0, 'rgba(' + col + ',' + (a * 0.4).toFixed(3) + ')');
-          gr.addColorStop(1, 'rgba(' + col + ',0)');
-          ctx.fillStyle = gr;
-          ctx.fillRect(x - s.r * 3.4, y - s.r * 3.4, s.r * 6.8, s.r * 6.8);
+      ctx.strokeStyle = 'rgba(226,232,240,0.16)';
+      ctx.lineWidth = 1.2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      for (var i = 0; i < consts.length; i++) {
+        var pts = consts[i];
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0] * W, pts[0][1] * H);
+        for (var k = 1; k < pts.length; k++) {
+          var mx = (pts[k - 1][0] + pts[k][0]) / 2 * W + (Math.random() - 0.5) * 5;
+          var my = (pts[k - 1][1] + pts[k][1]) / 2 * H + (Math.random() - 0.5) * 3;
+          ctx.quadraticCurveTo(mx, my, pts[k][0] * W, pts[k][1] * H);
         }
-        ctx.fillStyle = 'rgba(' + col + ',' + a.toFixed(3) + ')';
-        ctx.beginPath(); ctx.arc(x, y, s.r, 0, 6.283); ctx.fill();
+        ctx.stroke();
+      }
+      for (var nd = 0; nd < nodes.length; nd++) {
+        var s = nodes[nd];
+        var a = 0.22 + 0.18 * Math.sin(el * s.sp + s.ph);
+        ctx.fillStyle = 'rgba(210,224,255,' + (Math.max(0.08, a)).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(s.x * W, s.y * H, 1.6, 0, 6.283); ctx.fill();
       }
       frameN = (frameN + 1) % 1000000;
       var hud = document.getElementById('hudFrame');

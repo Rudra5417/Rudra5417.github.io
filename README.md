@@ -16,7 +16,7 @@ GitHub Pages redeploys automatically in about a minute.
 
 ## Cosmos background
 
-The site sits on a realistic starfield — a baked 512px cosmos tile repeats across the whole page (fixed, so it stays put while you scroll), and the hero adds ~110 bright stars that gently twinkle. No frameworks, no CDN, no animation dependencies — one file, works offline.
+The site sits on a black-paper ink-sketch background — a generated tile of hand-jittered constellations, contour doodles and hatch ticks repeats across the page (fixed while you scroll), with larger hand-drawn constellations and softly twinkling nodes in the hero. One file, zero dependencies, works offline.
 
 ## Colophon
 
