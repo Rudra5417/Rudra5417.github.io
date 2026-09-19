@@ -14,11 +14,9 @@ git add index.html && git commit -m "update" && git push
 
 GitHub Pages redeploys automatically in about a minute.
 
-## Cinematic opening
+## Cosmos background
 
-The hero is a **WebGL 3D scene** (three.js from CDN — the only external dependency): floating islands with real depth fog, a balloon bus, glider drops with physics, loot beams, a closing storm eye with lightning, embers, campfires and stars. Camera pushes in at load and follows your mouse. If three.js can't load (offline, old device), it falls back to an asset-free 2D canvas flyover, so the hero never breaks.
-
-To use real footage instead of the 3D scene, drop a muted **`intro.mp4`** (5–15s, landscape, H.264) next to `index.html` — it auto-plays fullscreen and the 3D scene stands down. Keep it under ~10 MB.
+The site sits on a realistic starfield — a baked 512px cosmos tile repeats across the whole page (fixed, so it stays put while you scroll), and the hero adds ~110 bright stars that gently twinkle. No frameworks, no CDN, no animation dependencies — one file, works offline.
 
 ## Colophon
 
