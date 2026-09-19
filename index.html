@@ -311,6 +311,30 @@
   .foot-l { display: grid; gap: .3rem; }
   .foot .hint { font-size: 10.5px; letter-spacing: .18em; color: var(--faint); opacity: .8; }
 
+  /* ── season archive strip ────────────────────── */
+  .seasons { margin-top: 1.2rem; }
+  .seasons-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
+  .seasons-head .kicker { font-size: 10.5px; }
+  .seasons-count { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--faint); }
+  .strip { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 10px; scrollbar-width: none; }
+  .strip::-webkit-scrollbar { display: none; }
+  .scard { position: relative; flex: 0 0 232px; scroll-snap-align: start; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s; }
+  .scard:hover, .scard:focus-visible { transform: translateY(-3px); border-color: rgba(233,161,59,.45); box-shadow: 0 18px 40px -18px rgba(0,0,0,.7), 0 0 30px -8px rgba(233,161,59,.25); }
+  .scard img { width: 100%; aspect-ratio: 16/11; object-fit: cover; transition: transform .5s var(--ease); display: block; }
+  .scard:hover img { transform: scale(1.07); }
+  .sc-meta { display: grid; gap: .1rem; padding: .65rem .8rem .7rem; }
+  .sc-meta b { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--accent); }
+  .sc-meta span { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; color: var(--text); text-transform: uppercase; }
+  .sc-meta em { font-size: 11px; color: var(--faint); font-style: normal; font-family: var(--mono); }
+  .scard.current { border-color: rgba(74,222,128,.5); box-shadow: 0 0 0 1px rgba(74,222,128,.25), 0 0 36px -8px rgba(74,222,128,.35); }
+  .sc-note { position: absolute; top: 10px; right: 10px; font-family: var(--mono); font-size: 9.5px; letter-spacing: .16em; color: #0b0b0c; background: var(--green); padding: 4px 9px; border-radius: 999px; font-weight: 500; box-shadow: 0 0 14px rgba(74,222,128,.7); }
+  #seasonLightbox { position: fixed; inset: 0; z-index: 220; background: rgba(5,5,6,.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+  #seasonLightbox.open { display: flex; }
+  #seasonLightbox img { max-width: min(92vw, 1100px); max-height: 78vh; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 40px 120px -30px rgba(0,0,0,.9); }
+  .lb-cap { font-family: var(--mono); font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .lb-close { position: absolute; top: 20px; right: 24px; font-family: var(--mono); font-size: 13px; color: var(--muted); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; cursor: pointer; transition: color .2s var(--ease), border-color .2s var(--ease); }
+  .lb-close:hover { color: var(--accent); border-color: rgba(233,161,59,.5); }
+
   /* ── marquee ─────────────────────────────────── */
   .marquee {
     border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
@@ -764,6 +788,31 @@
               <span class="ch current">Ch7 · S3 — Runners</span>
             </div>
             <p class="desc">I run the live side of Fortnite Discover — taking content from validation to launch, keeping every surface healthy, and building the dashboards and experiments that show whether it's actually connecting with players.</p>
+            <div class="seasons reveal" style="--d:.1s">
+              <div class="seasons-head">
+                <span class="kicker">the seasons I've shipped</span>
+                <span class="seasons-count">SCROLL →</span>
+              </div>
+              <div class="strip" id="seasonStrip">
+                <a class="scard" href="assets/seasons/c6ms2_simpsons.jpg" data-full="assets/seasons/c6ms2_simpsons.jpg">
+                  <img src="assets/seasons/c6ms2_simpsons.jpg" alt="Chapter 6 Mini Season 2 — The Simpsons" loading="lazy">
+                  <span class="sc-meta"><b>Ch6 · MS2</b><span>The Simpsons</span><em>where the run began</em></span>
+                </a>
+                <a class="scard" href="assets/seasons/c7s1_pacificbreak.jpg" data-full="assets/seasons/c7s1_pacificbreak.jpg">
+                  <img src="assets/seasons/c7s1_pacificbreak.jpg" alt="Chapter 7 Season 1 — Pacific Break" loading="lazy">
+                  <span class="sc-meta"><b>Ch7 · S1</b><span>Pacific Break</span><em>chapter 7 opens</em></span>
+                </a>
+                <a class="scard" href="assets/seasons/c7s2_showdown.jpg" data-full="assets/seasons/c7s2_showdown.jpg">
+                  <img src="assets/seasons/c7s2_showdown.jpg" alt="Chapter 7 Season 2 — Showdown" loading="lazy">
+                  <span class="sc-meta"><b>Ch7 · S2</b><span>Showdown</span><em>high-stakes season</em></span>
+                </a>
+                <a class="scard current" href="assets/seasons/c7s3_runners.jpg" data-full="assets/seasons/c7s3_runners.jpg">
+                  <img src="assets/seasons/c7s3_runners.jpg" alt="Chapter 7 Season 3 — Runners" loading="lazy">
+                  <span class="sc-note">NOW</span>
+                  <span class="sc-meta"><b>Ch7 · S3</b><span>Runners</span><em>current season</em></span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -854,6 +903,13 @@
   </section>
 
 </main>
+
+<!-- season key-art lightbox -->
+<div id="seasonLightbox" role="dialog" aria-label="Season key art">
+  <span class="lb-close">esc ✕</span>
+  <img src="" alt="">
+  <div class="lb-cap"></div>
+</div>
 
 <footer>
   <div class="wrap foot">
@@ -961,6 +1017,32 @@
         ticking = true;
       }
     }, { passive: true });
+  }
+
+  // ── season key-art lightbox ──
+  const seasonStrip = document.getElementById('seasonStrip');
+  const seasonBox = document.getElementById('seasonLightbox');
+  if (seasonStrip && seasonBox) {
+    const lbImg = seasonBox.querySelector('img');
+    const lbCap = seasonBox.querySelector('.lb-cap');
+    const closeLb = function () {
+      seasonBox.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+    seasonStrip.addEventListener('click', function (e) {
+      const card = e.target.closest('.scard');
+      if (!card) return;
+      e.preventDefault();
+      lbImg.src = card.getAttribute('data-full');
+      lbImg.alt = card.querySelector('.sc-meta b').textContent + ' — ' + card.querySelector('.sc-meta span').textContent;
+      lbCap.textContent = card.querySelector('.sc-meta b').textContent + ' · ' + card.querySelector('.sc-meta span').textContent;
+      seasonBox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+    seasonBox.addEventListener('click', function (e) {
+      if (e.target === seasonBox || e.target.classList.contains('lb-close')) closeLb();
+    });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLb(); });
   }
 </script>
 
@@ -1535,15 +1617,17 @@
     };
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x0d0c11, 5.5, 15);
+    scene.fog = new THREE.Fog(0x14121c, 6, 17);
     const TWO_PI = Math.PI * 2;
     const rand = function (a, b) { return a + Math.random() * (b - a); };
 
-    scene.add(new THREE.AmbientLight(0x6a6378, 0.75));
-    const key = new THREE.DirectionalLight(0xffc98a, 1.7);
-    key.position.set(4.5, 6, 2.5); scene.add(key);
-    const rim = new THREE.DirectionalLight(0x4a78ff, 0.55);
-    rim.position.set(-4, 2, -4.5); scene.add(rim);
+    scene.add(new THREE.AmbientLight(0x5d5470, 0.85));
+    const key = new THREE.DirectionalLight(0xffb46b, 2.0);
+    key.position.set(3.5, 5.5, 3); scene.add(key);
+    const rim = new THREE.DirectionalLight(0x4a78ff, 0.75);
+    rim.position.set(-4, 1.5, -5); scene.add(rim);
+    const fill = new THREE.DirectionalLight(0x8a5ab5, 0.35);
+    fill.position.set(-2, -3, 2); scene.add(fill);
     const stormFlashLight = new THREE.PointLight(0x4ade80, 0, 9);
     stormFlashLight.position.set(0, 1.2, -1.5); scene.add(stormFlashLight);
 
@@ -1562,12 +1646,26 @@
     starMat.fog = false;
     scene.add(new THREE.Points(starGeo, starMat));
 
+    // moon — big soft disc with warm glow
+    const moonTexC = document.createElement('canvas');
+    moonTexC.width = moonTexC.height = 256;
+    const mg = moonTexC.getContext('2d');
+    const mrad = mg.createRadialGradient(128, 128, 18, 128, 128, 122);
+    mrad.addColorStop(0, 'rgba(246,240,227,.95)');
+    mrad.addColorStop(.32, 'rgba(246,240,227,.5)');
+    mrad.addColorStop(1, 'rgba(246,240,227,0)');
+    mg.fillStyle = mrad; mg.beginPath(); mg.arc(128, 128, 122, 0, 6.283); mg.fill();
+    const moon = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 3.4), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(moonTexC), transparent: true, depthWrite: false }));
+    moon.material.fog = false;
+    moon.position.set(4.4, 3.6, -12);
+    scene.add(moon);
+
     const rockC = new THREE.Color(0x2b2326), rockC2 = new THREE.Color(0x241e21);
     const grassC = new THREE.Color(0x2a3820), grassC2 = new THREE.Color(0x1c2714);
     const tmpC = new THREE.Color();
     function makeIsland(spec) {
       const group = new THREE.Group();
-      const geo = new THREE.SphereGeometry(1.35, 16, 12);
+      const geo = new THREE.SphereGeometry(1.35, 20, 14);
       geo.translate(0, -0.32, 0);
       const pos = geo.attributes.position;
       const colors = new Float32Array(pos.count * 3);
@@ -1824,8 +1922,9 @@
       const camZ = 7.4 - 3.0 * (1 - Math.pow(1 - push, 3));
       shakeAmp *= 0.9;
       const shx = (Math.random() - 0.5) * shakeAmp, shy = (Math.random() - 0.5) * shakeAmp;
-      camera.position.set(mouse.x * 0.7 + shx, 1.15 + mouse.y * 0.35 + Math.sin(t * 0.4) * 0.06 + shy, camZ);
-      camera.lookAt(mouse.x * 0.6, 0.32, 0);
+      const orbit = Math.sin(t * 0.05) * 1.15;
+      camera.position.set(mouse.x * 0.7 + orbit + shx, 1.15 + mouse.y * 0.35 + Math.sin(t * 0.4) * 0.06 + shy, camZ);
+      camera.lookAt(orbit * 0.6 + mouse.x * 0.6, 0.32, 0);
 
       renderer.render(scene, camera);
     }
