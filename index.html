@@ -1736,52 +1736,12 @@
       scene.add(gal);
     })();
 
-    // ── zero-g duel — tiny space-suit pilots among drifting meteors ──
+    // ── space-Call-of-Duty dogfight — starfighters over a city-lit planet ──
     const boltMatCyan = new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending });
     const boltMatViolet = new THREE.MeshBasicMaterial({ color: 0xc4b5fd, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending });
     const metMat = new THREE.MeshStandardMaterial({ color: 0x3a3550, flatShading: true, roughness: 1 });
 
-    function makeAstro(suitColor, visorColor) {
-      const g = new THREE.Group();
-      const mats = {
-        suit: new THREE.MeshStandardMaterial({ color: suitColor, emissive: suitColor, emissiveIntensity: 0.35, roughness: 0.6, flatShading: true }),
-        dark: new THREE.MeshStandardMaterial({ color: 0x14141c, roughness: 0.9 }),
-        accent: new THREE.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x0ea5e9, emissiveIntensity: 0.6 }),
-      };
-      const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 10), new THREE.MeshStandardMaterial({ color: 0xdbe6ff, roughness: 0.15, metalness: 0.2 }));
-      helmet.position.y = 0.15;
-      const visor = new THREE.Mesh(new THREE.SphereGeometry(0.038, 12, 8, 0, TWO_PI, 0, Math.PI * 0.62), new THREE.MeshBasicMaterial({ color: visorColor }));
-      visor.rotation.x = -0.35;
-      visor.position.set(0, 0.152, 0.028);
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.042, 0.1, 8), mats.suit);
-      torso.position.y = 0.075;
-      const pack = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.06, 0.028), mats.dark);
-      pack.position.set(0, 0.075, -0.035);
-      const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.05, 8), mats.accent);
-      tank.position.set(0, 0.1, -0.04);
-      const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.016, 0.045, 6), mats.suit);
-      legL.position.set(-0.018, 0.008, 0);
-      const legR = legL.clone(); legR.position.x = 0.018;
-      const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.013, 0.04, 6), mats.suit);
-      armL.position.set(-0.035, 0.085, 0);
-      const armR = armL.clone(); armR.position.x = 0.035;
-      const gun = new THREE.Group();
-      const gunBody = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.014, 0.012), mats.dark);
-      const gunTip = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.03, 8), mats.accent);
-      gunTip.rotation.x = Math.PI / 2;
-      gunTip.position.z = 0.02;
-      gun.add(gunBody, gunTip);
-      gun.position.set(0.035, 0.085, 0.01);
-      const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: bokehTex, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-      flash.scale.set(0.24, 0.24, 1);
-      flash.visible = false;
-      g.add(helmet, visor, torso, pack, tank, legL, legR, armL, armR, gun, flash);
-      g.scale.setScalar(1.15);
-      g.userData = { legL: legL, legR: legR, armL: armL, armR: armR, gun: gun, flash: flash };
-      return g;
-    }
-
-    // meteoroids — drifting cover and landing pads
+    // meteoroids — drifting debris the fighters weave around
     const meteoroids = [];
     const metDefs = [
       { x: 2.1, y: -1.3, z: -5.8, s: 0.5 },
@@ -1797,18 +1757,112 @@
       meteoroids.push({ m: m, base: { x: d.x, y: d.y }, ph: Math.random() * TWO_PI, nx: 0, ny: 0 });
     }
 
-    // the duelists
-    const astroA = makeAstro(0x0e7490, 0x9ff3ff);
-    const astroB = makeAstro(0x5b21b6, 0xd8b4fe);
-    astroA.position.set(2.0, 0.6, -5.4);
-    astroB.position.set(5.4, -0.7, -5.2);
-    scene.add(astroA, astroB);
-    const A = { g: astroA, base: { x: 2.0, y: 0.6, z: -5.4 }, ph: 0, mode: 'float', tm: 0, fireT: 3.2, landT: 6.4, dodgeAt: 0, dodgeT: 0, dodgeDir: null, dodgeFrom: null, flipT: 0, jumpFrom: null, jumpDir: null };
-    const B = { g: astroB, base: { x: 5.4, y: -0.7, z: -5.2 }, ph: 2.1, mode: 'float', tm: 0, fireT: 4.2, landT: 8.2, dodgeAt: 0, dodgeT: 0, dodgeDir: null, dodgeFrom: null, flipT: 0, jumpFrom: null, jumpDir: null };
+    // planet — low on the horizon, the dogfight backdrop
+    let planetRef = null, cityLightsRef = null, haloRef2 = null;
+    (function makePlanet() {
+      const pGeo = new THREE.IcosahedronGeometry(6.5, 4);
+      const pp = pGeo.attributes.position;
+      const pc = new Float32Array(pp.count * 3);
+      const deep = new THREE.Color(0x082f4c), land = new THREE.Color(0x372c6e), glowUp = new THREE.Color(0x0ea5c9);
+      const tc = new THREE.Color();
+      for (let i = 0; i < pp.count; i++) {
+        const x = pp.getX(i), y = pp.getY(i), z = pp.getZ(i);
+        const h = Math.sin(x * 2.1) * Math.cos(z * 1.7) * Math.sin(y * 2.6 + 1.2);
+        tc.copy(h > 0.05 ? land : deep);
+        tc.lerp(glowUp, Math.max(0, Math.sin(h * 5)));
+        pc[i * 3] = tc.r; pc[i * 3 + 1] = tc.g; pc[i * 3 + 2] = tc.b;
+      }
+      pGeo.setAttribute('color', new THREE.BufferAttribute(pc, 3));
+      pGeo.computeVertexNormals();
+      planetRef = new THREE.Mesh(pGeo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.9 }));
+      planetRef.position.set(4.5, -10.5, -34);
+      scene.add(planetRef);
+      const lg = new THREE.BufferGeometry();
+      const lp = new Float32Array(700 * 3);
+      for (let i = 0; i < 700; i++) {
+        const th = Math.random() * TWO_PI, ph = Math.acos(Math.random() * 2 - 1);
+        lp[i * 3] = 6.55 * Math.sin(ph) * Math.cos(th);
+        lp[i * 3 + 1] = 6.55 * Math.cos(ph);
+        lp[i * 3 + 2] = 6.55 * Math.sin(ph) * Math.sin(th);
+      }
+      lg.setAttribute('position', new THREE.BufferAttribute(lp, 3));
+      cityLightsRef = new THREE.Points(lg, new THREE.PointsMaterial({ color: 0x9ff3ff, size: 0.05, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending }));
+      planetRef.add(cityLightsRef);
+      haloRef2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: bokehTex, color: 0x38bdf8, transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending }));
+      haloRef2.scale.set(15.5, 15.5, 1);
+      haloRef2.position.copy(planetRef.position);
+      scene.add(haloRef2);
+    })();
 
-    // bolts, flashes, sparks
+    // starfighter builder — low-poly, flat-shaded, glowing engines
+    function makeFighter(mainColor, glowColor) {
+      const g = new THREE.Group();
+      const bodyMat = new THREE.MeshStandardMaterial({ color: mainColor, emissive: mainColor, emissiveIntensity: 0.3, roughness: 0.55, flatShading: true });
+      const darkMat = new THREE.MeshStandardMaterial({ color: 0x12121a, roughness: 0.8 });
+      const glowMat = new THREE.MeshBasicMaterial({ color: glowColor, transparent: true, opacity: 0.9 });
+      const hull = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.95, 8), bodyMat);
+      hull.rotation.x = Math.PI / 2;
+      hull.position.z = -0.05;
+      const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8, 0, TWO_PI, 0, Math.PI * 0.55), darkMat);
+      cockpit.position.set(0, 0.1, 0.26);
+      const wingGeo = new THREE.BoxGeometry(0.44, 0.014, 0.11);
+      const wingL = new THREE.Mesh(wingGeo, bodyMat); wingL.position.set(-0.33, -0.02, 0.02); wingL.rotation.z = 0.3;
+      const wingR = wingL.clone(); wingR.position.x = 0.33; wingR.rotation.z = -0.3;
+      const finU = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.22, 0.03), bodyMat);
+      finU.position.set(0, 0.06, -0.46);
+      const finD = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.03), bodyMat);
+      finD.position.set(0, -0.05, -0.46);
+      const engL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.26, 8), darkMat);
+      engL.rotation.x = Math.PI / 2; engL.position.set(-0.16, 0, -0.38);
+      const engR = engL.clone(); engR.position.x = 0.16;
+      const discGeo = new THREE.CircleGeometry(0.05, 10);
+      const glowL = new THREE.Mesh(discGeo, glowMat); glowL.rotation.y = Math.PI / 2; glowL.position.set(-0.16, 0, -0.51);
+      const glowR = glowL.clone(); glowR.position.x = 0.16;
+      const podGeo = new THREE.BoxGeometry(0.03, 0.03, 0.18);
+      const podL = new THREE.Mesh(podGeo, darkMat); podL.position.set(-0.46, -0.045, 0.12);
+      const podR = podL.clone(); podR.position.x = 0.46;
+      g.add(hull, cockpit, wingL, wingR, finU, finD, engL, engR, glowL, glowR, podL, podR);
+      g.userData = { glowL: glowL, glowR: glowR };
+      return g;
+    }
+
+    const fighterA = makeFighter(0x0e7490, 0x67e8f9);
+    const fighterB = makeFighter(0x5b21b6, 0xc4b5fd);
+    const fighterW = makeFighter(0x33415e, 0x9db4ff);
+    fighterA.position.set(1.9, 0.5, -7.0);
+    fighterB.position.set(1.9, -0.5, -7.2);
+    fighterW.visible = false;
+    scene.add(fighterA, fighterB, fighterW);
+
+    // engine trails
+    function makeTrail(color) {
+      const geoT = new THREE.BufferGeometry();
+      geoT.setAttribute('position', new THREE.BufferAttribute(new Float32Array(60), 3));
+      const line = new THREE.Line(geoT, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+      line.visible = false;
+      scene.add(line);
+      return line;
+    }
+    const trailA = makeTrail(0x67e8f9), trailB = makeTrail(0xc4b5fd), trailW = makeTrail(0x9db4ff);
+    const trailHist = { A: [], B: [], W: [] };
+    function updateTrail(key, pos) {
+      const h = trailHist[key];
+      h.unshift({ x: pos.x, y: pos.y, z: pos.z });
+      if (h.length > 18) h.pop();
+      const tr = key === 'A' ? trailA : key === 'B' ? trailB : trailW;
+      const arr = tr.geometry.attributes.position.array;
+      for (let i = 0; i < 18; i++) {
+        const p = h[Math.min(i, h.length - 1)];
+        arr[i * 3] = p.x; arr[i * 3 + 1] = p.y; arr[i * 3 + 2] = p.z;
+      }
+      tr.geometry.attributes.position.needsUpdate = true;
+      tr.visible = h.length > 2;
+    }
+
+    // shots, flashes, sparks, explosion puffs
     const bolts = [];
     const flashes = [];
+    const pendingShots = [];
     const sparkPool = [];
     for (let i = 0; i < 12; i++) {
       const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: bokehTex, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
@@ -1821,11 +1875,26 @@
       for (let k = 0; k < n; k++) {
         const s = sparkPool[sparkIdx % sparkPool.length]; sparkIdx += 1;
         s.life = 1; s.x = pos.x; s.y = pos.y; s.z = pos.z;
-        const a = Math.random() * TWO_PI, sp = 0.05 + Math.random() * 0.12;
-        s.vx = Math.cos(a) * sp; s.vy = Math.sin(a) * sp; s.vz = (Math.random() - 0.5) * 0.08;
+        const a = Math.random() * TWO_PI, sp = 0.05 + Math.random() * 0.14;
+        s.vx = Math.cos(a) * sp; s.vy = Math.sin(a) * sp; s.vz = (Math.random() - 0.5) * 0.1;
         s.obj.material.color.setHex(color);
-        s.obj.visible = true; s.obj.scale.setScalar(0.2);
+        s.obj.visible = true; s.obj.scale.setScalar(0.22);
       }
+    }
+    const poofs = [];
+    for (let i = 0; i < 3; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: bokehTex, color: 0xffa36b, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+      s.visible = false; s.scale.setScalar(0.01);
+      scene.add(s);
+      poofs.push({ obj: s, life: 0, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0 });
+    }
+    let poofIdx = 0;
+    function poof(pos, color) {
+      const p = poofs[poofIdx % poofs.length]; poofIdx += 1;
+      p.life = 1; p.x = pos.x; p.y = pos.y; p.z = pos.z;
+      p.vx = (Math.random() - 0.5) * 0.012; p.vy = (Math.random() - 0.5) * 0.012; p.vz = (Math.random() - 0.5) * 0.012;
+      p.obj.material.color.setHex(color);
+      p.obj.visible = true;
     }
 
     const FORWARD = new THREE.Vector3(0, 0, 1);
@@ -1836,150 +1905,123 @@
       desiredQ.setFromUnitVectors(FORWARD, tmpV);
       g.quaternion.rotateTowards(desiredQ, step);
     }
-    function nearestMeteor(pos) {
-      let best = null, bd = 1e9;
-      for (const md of meteoroids) {
-        const d = md.m.position.distanceTo(pos);
-        if (d < bd) { bd = d; best = md; }
-      }
-      return best;
-    }
-    function fire(self, foe, t) {
-      const g = self.g;
-      const muzzle = new THREE.Vector3(0.06, 0.075, 0.08).applyQuaternion(g.quaternion).add(g.position);
-      let aimPt, targetMeteor = null;
-      if (Math.random() < 0.3) {
-        targetMeteor = meteoroids[Math.floor(Math.random() * meteoroids.length)];
-        aimPt = targetMeteor.m.position.clone();
-      } else {
-        aimPt = foe.g.position.clone();
-      }
-      const dir = tmpV.subVectors(aimPt, muzzle).normalize();
-      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.18, 6), self === A ? boltMatCyan : boltMatViolet);
+    function shipFire(from, to, mat) {
+      const dir = tmpV.subVectors(to, from).normalize();
+      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.22, 6), mat);
       bolt.rotation.x = Math.PI / 2;
-      bolt.position.copy(muzzle);
+      bolt.position.copy(from);
       scene.add(bolt);
-      bolts.push({ mesh: bolt, x: muzzle.x, y: muzzle.y, z: muzzle.z, vx: dir.x * 3.6, vy: dir.y * 3.6, vz: dir.z * 3.6, life: 1.15, targetMeteor: targetMeteor, hit: false });
-      const fl = g.userData.flash;
-      fl.visible = true; fl.material.opacity = 0.85;
-      flashes.push({ obj: fl, life: 0.5 });
-      self.mode = 'recoil'; self.tm = t + 0.4;
-      // the foe dodges right as the bolt would arrive
-      const dist = g.position.distanceTo(foe.g.position);
-      foe.dodgeAt = t + Math.max(0.15, dist / 3.6 - 0.18);
+      bolts.push({ mesh: bolt, x: from.x, y: from.y, z: from.z, vx: dir.x * 4.2, vy: dir.y * 4.2, vz: dir.z * 4.2, life: 1.2, hit: Math.random() < 0.12, target: { x: to.x, y: to.y, z: to.z } });
+      const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: bokehTex, color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending }));
+      fl.scale.set(0.26, 0.26, 1);
+      fl.position.copy(from);
+      scene.add(fl);
+      flashes.push({ obj: fl, life: 0.3 });
+    }
+    function burst(attacker, target, mat, t) {
+      const from = attacker.position.clone();
+      from.y += 0.02;
+      for (let k = 0; k < 3; k++) pendingShots.push({ at: t + k * 0.11, from: from, mat: mat, target: target });
+      const dist = attacker.position.distanceTo(target.position);
+      const delay = Math.max(0.12, dist / 4.2 - 0.2);
+      if (target === fighterA) dogfight.evadeA = t + delay;
+      else dogfight.evadeB = t + delay;
     }
 
-    function duelAstro(t, self, foe) {
-      const g = self.g, u = g.userData;
-      if (self.mode === 'aim' || self.mode === 'recoil' || self.mode === 'float') {
-        // continuous drift — the pilot never stops, so motion stays smooth
-        const dt = { x: self.base.x + Math.sin(t * 0.32 + self.ph) * 0.55, y: self.base.y + Math.cos(t * 0.24 + self.ph * 1.7) * 0.4 };
-        g.position.x += (dt.x - g.position.x) * 0.045;
-        g.position.y += (dt.y - g.position.y) * 0.045;
-        g.position.z += (self.base.z - g.position.z) * 0.02;
-        u.legL.rotation.x = Math.sin(t * 3 + self.ph) * 0.5;
-        u.legR.rotation.x = -Math.sin(t * 3 + self.ph) * 0.5;
-        u.armL.rotation.x = Math.sin(t * 2.4 + self.ph) * 0.3;
-        u.armR.rotation.x = -Math.sin(t * 2.4 + self.ph) * 0.3;
-        if (self.mode === 'aim') {
-          faceSmooth(g, foe.g.position, 0.09);
-          u.gun.rotation.x = -0.5 + Math.sin(t * 30) * 0.06;
-          if (t > self.tm) fire(self, foe, t);
-        } else if (self.mode === 'recoil') {
-          faceSmooth(g, foe.g.position, 0.09);
-          u.gun.rotation.x = 0.4;
-          if (t > self.tm) { self.mode = 'float'; u.gun.rotation.x = 0; }
-        } else {
-          faceSmooth(g, foe.g.position, 0.045);
-          u.gun.rotation.x = 0;
-          if (!self.dodgeAt && self.fireT < t) { self.mode = 'aim'; self.tm = t + 0.45; self.fireT = t + rand(5, 8); }
-          if (self.dodgeAt && t >= self.dodgeAt) {
-            self.dodgeAt = 0;
-            self.dodgeDir = { x: (Math.random() < 0.5 ? 1 : -1) * 0.85, y: (Math.random() - 0.5) * 0.7 };
-            self.dodgeFrom = { x: g.position.x, y: g.position.y };
-            self.dodgeT = t + 0.45;
-            self.mode = 'dodge';
-          }
-          if (self.landT < t && !self.dodgeAt && self.fireT - t > 2.2) { self.mode = 'toLand'; }
-        }
-      } else if (self.mode === 'dodge') {
-        const p = Math.min(1, (t - (self.dodgeT - 0.45)) / 0.45);
-        g.position.x = self.dodgeFrom.x + self.dodgeDir.x * Math.sin(p * Math.PI);
-        g.position.y = self.dodgeFrom.y + self.dodgeDir.y * Math.sin(p * Math.PI);
-        faceSmooth(g, foe.g.position, 0.12);
-        g.rotateZ(Math.sin(p * Math.PI) * 0.9 - (self.dodgeRoll || 0));
-        self.dodgeRoll = Math.sin(p * Math.PI) * 0.9;
-        if (p >= 1) { self.dodgeRoll = 0; self.base = { x: self.dodgeFrom.x, y: self.dodgeFrom.y, z: g.position.z }; self.mode = 'float'; }
-      } else if (self.mode === 'toLand') {
-        const md = nearestMeteor(g.position);
-        const pt = md ? md.m.position : new THREE.Vector3(self.base.x, self.base.y, self.base.z);
-        faceSmooth(g, pt, 0.08);
-        g.position.x += (pt.x - g.position.x) * 0.02;
-        g.position.y += (pt.y - g.position.y) * 0.02;
-        g.position.z += (pt.z - g.position.z) * 0.03;
-        if (g.position.distanceTo(pt) < 0.18) { self.mode = 'landed'; self.tm = t + 0.7; self.meteor = md; }
-      } else if (self.mode === 'landed') {
-        g.scale.setScalar(0.98 + Math.sin(t * 4) * 0.03);
-        faceSmooth(g, foe.g.position, 0.06);
-        u.legL.rotation.x = 1.2; u.legR.rotation.x = 1.2;
-        if (self.meteor) g.position.y = self.meteor.m.position.y + Math.sin(t * 2) * 0.035;
-        if (t > self.tm) {
-          g.scale.setScalar(1.15);
-          u.legL.rotation.x = 0; u.legR.rotation.x = 0;
-          self.jumpFrom = { x: g.position.x, y: g.position.y, z: g.position.z };
-          const ja = Math.random() * TWO_PI;
-          self.jumpDir = { x: Math.cos(ja) * 0.9, y: Math.sin(ja) * 0.5 + 0.25 };
-          self.flipT = t; self.mode = 'jump';
-          sparkP(g.position, 0x8b5cf6, 5);
-        }
-      } else if (self.mode === 'jump') {
-        const p = Math.min(1, (t - self.flipT) / 0.9);
-        const boost = Math.sin(p * Math.PI) * 0.5;
-        g.position.x = self.jumpFrom.x + self.jumpDir.x * p * 0.9;
-        g.position.y = self.jumpFrom.y + self.jumpDir.y * p * 0.9 + boost * 0.3;
-        g.rotateX(Math.PI * 2 * (p - (self.flipP || 0)));
-        self.flipP = p;
-        if (p >= 1) {
-          self.flipP = 0;
-          self.base = { x: g.position.x, y: g.position.y, z: g.position.z };
-          self.mode = 'float';
-          self.landT = t + rand(8, 12);
-        }
-      }
-    }
+    const dogfight = { fireA: 3.5, fireB: 6.0, flybyW: 12, evadeA: -9, evadeB: -9, wing: { active: false, t: 0 } };
 
-    function updateDuel(t) {
+    function updateDogfight(t) {
       for (const md of meteoroids) {
         md.m.rotation.z += 0.002;
         md.nx *= 0.96; md.ny *= 0.96;
         md.m.position.x = md.base.x + Math.sin(t * 0.13 + md.ph) * 0.35 + md.nx;
         md.m.position.y = md.base.y + Math.cos(t * 0.1 + md.ph * 2) * 0.22 + md.ny;
       }
-      duelAstro(t, A, B);
-      duelAstro(t, B, A);
-      if (!A.dodgeAt && !B.dodgeAt && Math.random() < 0.0006) {
-        // rare synchronized crossfire — bolts pass each other
-        if (A.mode === 'float') A.mode = 'aim';
-        if (B.mode === 'float') B.mode = 'aim';
+
+      // wingman flyby
+      if (!dogfight.wing.active && t >= dogfight.flybyW) {
+        dogfight.wing.active = true; dogfight.flybyW = t + rand(16, 22);
+        fighterW.visible = true;
+        fighterW.position.set(-14, rand(1.0, 2.4), rand(-11, -8));
       }
+      if (dogfight.wing.active) {
+        fighterW.position.x += 0.08;
+        fighterW.position.y += Math.sin(t * 1.8) * 0.012;
+        faceSmooth(fighterW, fighterB.position, 0.05);
+        fighterW.rotateZ(0.3);
+        updateTrail('W', fighterW.position);
+        if (fighterW.position.x > 15) { dogfight.wing.active = false; fighterW.visible = false; trailHist.W = []; trailW.visible = false; }
+      } else { trailW.visible = false; }
+
+      // combat loop — mirrored orbits, banking into the turn
+      const aT = t * 0.14;
+      fighterA.position.x = Math.sin(aT) * 2.6 + 1.9;
+      fighterA.position.y = 0.4 + Math.sin(t * 0.11 + 1) * 0.9;
+      fighterA.position.z = -7.0 + Math.sin(aT * 0.5) * 0.6;
+      fighterB.position.x = Math.sin(aT + Math.PI) * 2.6 + 1.9;
+      fighterB.position.y = -0.5 + Math.sin(t * 0.09 + 4) * 0.9;
+      fighterB.position.z = -7.2 + Math.sin((aT + Math.PI) * 0.5) * 0.6;
+      if (t < dogfight.evadeB + 0.7) {
+        const ep = Math.min(1, (t - dogfight.evadeB) / 0.7);
+        fighterB.position.y += Math.sin(ep * Math.PI) * 0.9;
+        fighterB.position.x += Math.cos(ep * Math.PI) * 0.4;
+      } else { dogfight.evadeB = -9; }
+      if (t < dogfight.evadeA + 0.7) {
+        const ep = Math.min(1, (t - dogfight.evadeA) / 0.7);
+        fighterA.position.y -= Math.sin(ep * Math.PI) * 0.9;
+        fighterA.position.x -= Math.cos(ep * Math.PI) * 0.4;
+      } else { dogfight.evadeA = -9; }
+
+      faceSmooth(fighterA, fighterB.position, 0.09);
+      faceSmooth(fighterB, fighterA.position, 0.09);
+      fighterA.rotateZ(0.42);   // constant bank
+      fighterB.rotateZ(-0.42);
+
+      // engine flicker + trails
+      const flA = 0.75 + 0.4 * Math.sin(t * 39) + (Math.random() - 0.5) * 0.35;
+      fighterA.userData.glowL.material.opacity = Math.max(0.15, flA);
+      fighterA.userData.glowR.material.opacity = Math.max(0.15, flA);
+      const flB = 0.75 + 0.4 * Math.sin(t * 33 + 2) + (Math.random() - 0.5) * 0.35;
+      fighterB.userData.glowL.material.opacity = Math.max(0.15, flB);
+      fighterB.userData.glowR.material.opacity = Math.max(0.15, flB);
+      updateTrail('A', fighterA.position);
+      updateTrail('B', fighterB.position);
+
+      // firing beats
+      if (t >= dogfight.fireA) { dogfight.fireA = t + rand(5.5, 8.5); burst(fighterA, fighterB, boltMatCyan, t); }
+      if (t >= dogfight.fireB) { dogfight.fireB = t + rand(5.5, 8.5); burst(fighterB, fighterA, boltMatViolet, t); }
+      for (let i = pendingShots.length - 1; i >= 0; i--) {
+        const s = pendingShots[i];
+        if (t >= s.at) {
+          shipFire(s.from, s.target.position.clone(), s.mat);
+          pendingShots.splice(i, 1);
+        }
+      }
+
+      // bolts — near-miss sparks, occasional hit poof
       for (let i = bolts.length - 1; i >= 0; i--) {
         const b = bolts[i];
         b.life -= 0.016;
         b.x += b.vx; b.y += b.vy; b.z += b.vz;
         b.mesh.position.set(b.x, b.y, b.z);
-        if (b.targetMeteor && !b.hit && b.life < 0.35) {
-          b.hit = true;
-          sparkP(b.mesh.position, 0x67e8f9, 5);
-          b.targetMeteor.nx += (Math.random() - 0.5) * 0.45;
-          b.targetMeteor.ny += (Math.random() - 0.5) * 0.45;
+        if (b.life < 0.3) {
+          if (b.hit) {
+            poof({ x: b.target.x, y: b.target.y, z: b.target.z }, 0xffa36b);
+            sparkP({ x: b.target.x, y: b.target.y, z: b.target.z }, 0xffcf9f, 10);
+          } else {
+            sparkP({ x: b.x, y: b.y, z: b.z }, 0x67e8f9, 4);
+          }
+          scene.remove(b.mesh);
+          bolts.splice(i, 1);
         }
-        if (b.life <= 0) { scene.remove(b.mesh); bolts.splice(i, 1); }
       }
+
+      // flashes / sparks / poofs decay
       for (let i = flashes.length - 1; i >= 0; i--) {
         const f = flashes[i];
-        f.life -= 0.05;
-        if (f.life <= 0) { f.obj.visible = false; f.obj.material.opacity = 0; flashes.splice(i, 1); }
-        else { f.obj.material.opacity = f.life * 1.6; }
+        f.life -= 0.06;
+        if (f.life <= 0) { scene.remove(f.obj); flashes.splice(i, 1); }
+        else { f.obj.material.opacity = f.life * 2.6; }
       }
       for (const s of sparkPool) {
         if (s.life > 0) {
@@ -1990,22 +2032,22 @@
           s.obj.material.opacity = Math.max(0, s.life);
         } else { s.obj.visible = false; }
       }
+      for (const p of poofs) {
+        if (p.life > 0) {
+          p.life -= 0.022;
+          p.x += p.vx; p.y += p.vy; p.z += p.vz;
+          p.obj.position.set(p.x, p.y, p.z);
+          p.obj.scale.setScalar(Math.max(0.05, 0.3 + (1 - p.life) * 2.1));
+          p.obj.material.opacity = Math.max(0, p.life * 0.85);
+        } else { p.obj.visible = false; }
+      }
     }
-
-    // drifting dust motes
-    const dustN = 90;
-    const dGeo = new THREE.BufferGeometry();
-    const dPos = new Float32Array(dustN * 3);
-    for (let i = 0; i < dustN; i++) {
-      dPos[i * 3] = rand(-11, 11); dPos[i * 3 + 1] = rand(-3, 4); dPos[i * 3 + 2] = rand(-24, -2);
-    }
-    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
-    const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({ color: 0xbfd4ff, size: 0.03, transparent: true, opacity: 0.5, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false }));
 
     let pulse = 0, frameN = 0;
     const hudEl = document.getElementById('hudFrame');
     hero.addEventListener('pointerdown', function () { pulse = 1; }, { passive: true });
-        const mouse = { x: 0, y: 0 };
+
+    const mouse = { x: 0, y: 0 };
     hero.addEventListener('mousemove', function (e) {
       const r = hero.getBoundingClientRect();
       mouse.x += (((e.clientX - r.left) / r.width - 0.5) - mouse.x) * 0.15;
@@ -2030,7 +2072,7 @@
       }
       gal.material.rotation = t * 0.02;
 
-      updateDuel(t);
+      updateDogfight(t);
 
       // dust motes drift
       const dp = dust.geometry.attributes.position.array;
