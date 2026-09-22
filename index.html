@@ -102,16 +102,6 @@
   .work-row .body .d { color: var(--faint); font-size: 12.5px; margin-top: .15rem; }
   .work-row .yr { color: var(--faint); font-size: 12px; white-space: nowrap; }
 
-  /* case study (Discover) */
-  details.case { border: 0; }
-  details.case summary { cursor: pointer; list-style: none; display: flex; gap: 1.4rem; align-items: baseline; }
-  details.case summary::-webkit-details-marker { display: none; }
-  details.case summary .marker { color: var(--accent); font-size: 12px; margin-left: auto; transition: transform .2s var(--ease); }
-  details.case[open] summary .marker { transform: rotate(90deg); }
-  .case-list { margin: 1.1rem 0 .6rem 48px; display: grid; gap: .8rem; border-left: 2px solid color-mix(in srgb, var(--accent) 25%, transparent); padding-left: 1.2rem; }
-  .case-row { font-size: 13px; line-height: 1.65; color: var(--muted); }
-  .case-row b { color: var(--accent); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: .1rem; }
-
   /* other builds */
   details.others { margin-top: 1.3rem; }
   details.others summary { cursor: pointer; list-style: none; font-size: 12.5px; color: var(--muted); padding: .6rem .4rem; letter-spacing: .08em; }
@@ -175,7 +165,6 @@
   }
   @media (max-width: 620px) {
     .xp-row { grid-template-columns: 1fr; gap: .4rem; }
-    .case-list { margin-left: 0; }
     .work-row .yr { display: none; }
     footer .wrap { height: auto; padding: 1.1rem 0; }
   }
@@ -190,8 +179,8 @@
   <div class="wrap">
     <a class="brand" href="#top">rudra<span>.</span>patel</a>
     <nav>
-      <a href="#work">work</a>
       <a href="#experience">experience</a>
+      <a href="#work">work</a>
       <a href="#skills">skills</a>
       <a href="assets/resume.pdf" target="_blank" rel="noopener">resume</a>
     </nav>
@@ -206,73 +195,10 @@
     <h1>Rudra<span class="accent">.</span>Patel</h1>
     <p class="tagline">
       I run <b>Fortnite Discover</b> live operations at Epic Games — measuring what ships, what
-      holds players, and what changes next week. Nights and weekends:
+      holds players, and what changes next week. Recently:
       <a href="https://github.com/Rudra5417/whoop5-protocol" target="_blank" rel="noopener">reverse-engineering the WHOOP 5.0 BLE protocol in Swift</a>.
     </p>
     <p class="meta">M.S. Applied Data Science (USC) · Epic Games → AWS → Easley-Dunn → DRDO</p>
-  </section>
-
-  <!-- ═══ WORK ═══ -->
-  <section class="section wrap" id="work">
-    <div class="sec-head reveal">
-      <h2>Things I've built</h2>
-      <span class="idx">01 — 04</span>
-    </div>
-
-    <div class="work-row reveal">
-      <span class="no">01</span>
-      <div class="body">
-        <div class="t"><a href="https://github.com/Rudra5417/whoop5-protocol" target="_blank" rel="noopener">whoop5-protocol</a></div>
-        <div class="d">WHOOP 5.0 / MG BLE protocol in Swift — frame envelope, CRC16-Modbus/CRC32, live + historical record decoders, validated against a published hardware capture.</div>
-      </div>
-      <span class="yr">2026</span>
-    </div>
-
-    <div class="work-row reveal" style="--d:.05s">
-      <span class="no">02</span>
-      <div class="body">
-        <div class="t"><a href="https://github.com/Rudra5417/stormglass" target="_blank" rel="noopener">stormglass</a></div>
-        <div class="d">Surface health for UEFN / Fortnite Creative island creators — sessions, retention, dwell by entry point. The Discover rigor, packaged. Not affiliated with Epic.</div>
-      </div>
-      <span class="yr">2025</span>
-    </div>
-
-    <details class="case work-row reveal" style="--d:.1s" open>
-      <summary>
-        <span class="no">03</span>
-        <span class="body"><span class="t">Fortnite Discover — surface health &amp; experiments</span>
-        <span class="d">Which surfaces deserve the next launch: impressions, click-through, session retention in SQL over Databricks, watched live in Grafana.</span></span>
-        <span class="marker">→</span>
-      </summary>
-      <div class="case-list">
-        <div class="case-row"><b>Question</b>Which Discover surfaces were underperforming for returning players as the catalog grew?</div>
-        <div class="case-row"><b>Data</b>Surface impressions, click-through, session-retention events · SQL on Databricks · Grafana dashboards.</div>
-        <div class="case-row"><b>Finding</b>Players returned to a small set of trusted slots; two high-traffic surfaces dropped most of their audience within seconds of entry.</div>
-        <div class="case-row"><b>Action</b>Re-weighted catalog programming each launch, moved highest-hold content into the weak slots, standing weekly surface-health review.</div>
-        <div class="case-row"><b>Result</b>4% lift in discovery session retention that season — EDIT: confirm the metric + definition before sharing (impressions? CTR? playtime? retention?).</div>
-      </div>
-    </details>
-
-    <div class="work-row reveal" style="--d:.15s">
-      <span class="no">04</span>
-      <div class="body">
-        <div class="t">D30 retention 60% → 80%</div>
-        <div class="d">Easley-Dunn: one experiment, one cohort split, one feature — measured where the 5,000-player base stopped returning, shipped the winner.</div>
-      </div>
-      <span class="yr">24—25</span>
-    </div>
-
-    <details class="others reveal" style="--d:.2s">
-      <summary>other builds</summary>
-      <div class="other-row">
-        <a href="https://github.com/Rudra5417/clarify" target="_blank" rel="noopener">clarify — PDF/image one-shot reader</a>
-        <a href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">Code-Generator-using-GPT-3 (14★)</a>
-        <a href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">DocBot — document Q&amp;A</a>
-        <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
-        <a href="https://github.com/Rudra5417" target="_blank" rel="noopener">Wattpath — grid-optimization scheduler</a>
-        <a href="https://github.com/Rudra5417/atmos-imaging-cnn" target="_blank" rel="noopener">atmos-imaging-cnn — turbulence removal</a>
-      </div>
-    </details>
   </section>
 
   <!-- ═══ EXPERIENCE ═══ -->
@@ -318,6 +244,53 @@
         <p class="desc">ML at scale before the word was everywhere — CNN reconstruction of 3.5M+ images distorted by atmospheric turbulence.</p>
       </div>
     </div>
+  </section>
+
+  <!-- ═══ WORK ═══ -->
+  <section class="section wrap" id="work">
+    <div class="sec-head reveal">
+      <h2>Things I've built</h2>
+      <span class="idx">01 — 03</span>
+    </div>
+
+    <div class="work-row reveal">
+      <span class="no">01</span>
+      <div class="body">
+        <div class="t"><a href="https://github.com/Rudra5417/whoop5-protocol" target="_blank" rel="noopener">whoop5-protocol</a></div>
+        <div class="d">WHOOP 5.0 / MG BLE protocol in Swift — frame envelope, CRC16-Modbus/CRC32, live + historical record decoders, validated against a published hardware capture.</div>
+      </div>
+      <span class="yr">2026</span>
+    </div>
+
+    <div class="work-row reveal" style="--d:.05s">
+      <span class="no">02</span>
+      <div class="body">
+        <div class="t"><a href="https://github.com/Rudra5417/stormglass" target="_blank" rel="noopener">stormglass</a></div>
+        <div class="d">Surface health for UEFN / Fortnite Creative island creators — sessions, retention, dwell by entry point. The Discover rigor, packaged. Not affiliated with Epic.</div>
+      </div>
+      <span class="yr">2025</span>
+    </div>
+
+    <div class="work-row reveal" style="--d:.15s">
+      <span class="no">03</span>
+      <div class="body">
+        <div class="t">D30 retention 60% → 80%</div>
+        <div class="d">Easley-Dunn: one experiment, one cohort split, one feature — measured where the 5,000-player base stopped returning, shipped the winner.</div>
+      </div>
+      <span class="yr">24—25</span>
+    </div>
+
+    <details class="others reveal" style="--d:.2s">
+      <summary>other builds</summary>
+      <div class="other-row">
+        <a href="https://github.com/Rudra5417/clarify" target="_blank" rel="noopener">clarify — PDF/image one-shot reader</a>
+        <a href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">Code-Generator-using-GPT-3 (14★)</a>
+        <a href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">DocBot — document Q&amp;A</a>
+        <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
+        <a href="https://github.com/Rudra5417" target="_blank" rel="noopener">Wattpath — grid-optimization scheduler</a>
+        <a href="https://github.com/Rudra5417/atmos-imaging-cnn" target="_blank" rel="noopener">atmos-imaging-cnn — turbulence removal</a>
+      </div>
+    </details>
   </section>
 
   <!-- ═══ SKILLS ═══ -->
