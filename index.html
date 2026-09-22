@@ -12,6 +12,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rudra Patel — Live Ops & Data · Fortnite Discover</title>
 <meta name="description" content="Rudra Patel — Discover live operations and game analytics at Epic Games. SQL, dashboards, experiments, and the occasional BLE reverse-engineering project.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rudra Patel — Live Ops & Data · Fortnite Discover">
+<meta property="og:description" content="Live ops & analytics inside a live game: Fortnite Discover at Epic, and side builds — WHOOP 5.0 BLE protocol, Stormglass, clarify.">
+<meta property="og:url" content="https://rudra5417.github.io/">
+<meta property="og:image" content="https://rudra5417.github.io/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rudra Patel — Live Ops & Data · Fortnite Discover">
+<meta name="twitter:description" content="Fortnite Discover live ops + side builds: WHOOP 5.0 BLE protocol, Stormglass, clarify.">
+<meta name="twitter:image" content="https://rudra5417.github.io/assets/og-card.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0b0c'/><text y='.9em' x='6' font-size='80' fill='%232dd4f7'>R</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,6 +111,9 @@
   .work-row .body .t a { border-bottom: 1px solid transparent; }
   .work-row .body .t a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   .work-row .body .d { color: var(--faint); font-size: 12.5px; margin-top: .15rem; }
+  .work-row .body .d a { color: var(--accent); border-bottom: 1px dashed color-mix(in srgb, var(--accent) 40%, transparent); }
+  .work-row .body .d a:hover { color: var(--text); border-bottom-color: var(--accent); }
+  .snip { margin-top: .55rem; font-size: 11.5px; line-height: 1.6; color: var(--faint); border-left: 2px solid color-mix(in srgb, var(--accent) 30%, transparent); padding-left: .8rem; letter-spacing: .02em; white-space: pre-line; }
   .work-row .yr { color: var(--faint); font-size: 12px; white-space: nowrap; }
 
   /* other builds */
@@ -250,14 +264,16 @@
   <section class="section wrap" id="work">
     <div class="sec-head reveal">
       <h2>Things I've built</h2>
-      <span class="idx">01 — 02</span>
+      <span class="idx">01 — 03</span>
     </div>
 
     <div class="work-row reveal">
       <span class="no">01</span>
       <div class="body">
         <div class="t"><a href="https://github.com/Rudra5417/whoop5-protocol" target="_blank" rel="noopener">whoop5-protocol</a></div>
-        <div class="d">WHOOP 5.0 / MG BLE protocol in Swift — frame envelope, CRC16-Modbus/CRC32, live + historical record decoders, validated against a published hardware capture.</div>
+        <div class="d">WHOOP 5.0 / MG BLE protocol in Swift — frame envelope, CRC16-Modbus/CRC32, live + historical record decoders.</div>
+        <div class="snip">[MG fd4b] frame 0x28 · ver 2 · crc16-modbus + crc32 · live + historical decoders
+checked-in proof: 4 consecutive 0x28 captures from a worn WHOOP 5.0 (fw 50.42.1.0) · CLIENT_HELLO reproduced byte-for-byte</div>
       </div>
       <span class="yr">2026</span>
     </div>
@@ -266,7 +282,16 @@
       <span class="no">02</span>
       <div class="body">
         <div class="t"><a href="https://github.com/Rudra5417/stormglass" target="_blank" rel="noopener">stormglass</a></div>
-        <div class="d">Surface health for UEFN / Fortnite Creative island creators — sessions, retention, dwell by entry point. The Discover rigor, packaged. Not affiliated with Epic.</div>
+        <div class="d">Look up any UEFN island by code: last-day KPIs, 7-day charts, hourly CCU, genre rank hold — from Epic's public Fortnite Data API, no login. <a href="https://feat-stormglass-v1.vercel.app" target="_blank" rel="noopener">live app ↗</a> · not affiliated with Epic.</div>
+      </div>
+      <span class="yr">2026</span>
+    </div>
+
+    <div class="work-row reveal" style="--d:.15s">
+      <span class="no">03</span>
+      <div class="body">
+        <div class="t"><a href="https://github.com/Rudra5417/clarify" target="_blank" rel="noopener">clarify</a></div>
+        <div class="d">One-shot reader: drop a PDF or image, get what it is, what to do, and which fields might be wrong.</div>
       </div>
       <span class="yr">2026</span>
     </div>
@@ -274,7 +299,6 @@
     <details class="others reveal" style="--d:.2s">
       <summary>other builds</summary>
       <div class="other-row">
-        <a href="https://github.com/Rudra5417/clarify" target="_blank" rel="noopener">clarify — PDF/image one-shot reader</a>
         <a href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">Code-Generator-using-GPT-3 (14★)</a>
         <a href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">DocBot — document Q&amp;A</a>
         <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
