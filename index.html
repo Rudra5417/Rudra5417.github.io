@@ -2,605 +2,198 @@
 <!--
   ═══════════════════════════════════════════════════════════════
   Personal portfolio — Rudra Patel
-  Content: Rudra_Resume.pdf + github.com/Rudra5417 · single file ·
-  no frameworks, no build. Deploy: any static host.
-  To change anything, search "EDIT" (Cmd+F).
+  Single file · no frameworks · no build · works offline.
+  Konami easter egg: ↑ ↑ ↓ ↓ ← → ← → B A
   ═══════════════════════════════════════════════════════════════
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rudra Patel — Product Analytics & Live Ops · Fortnite Discover</title>
-<meta name="description" content="Rudra Patel — live ops and product analytics at Epic Games (Fortnite Discover): SQL, dashboards, and experiments that decide what ships, what stays, and what changes next week.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0b0c'/><text y='.9em' x='6' font-size='80' fill='%23e9a13b'>R</text></svg>">
+<title>Rudra Patel — Live Ops & Data · Fortnite Discover</title>
+<meta name="description" content="Rudra Patel — Discover live operations and game analytics at Epic Games. SQL, dashboards, experiments, and the occasional BLE reverse-engineering project.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0b0c'/><text y='.9em' x='6' font-size='80' fill='%232dd4f7'>R</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:        #0b0b0c;
-    --surface:   #131315;
-    --surface-2: #19191c;
-    --border:    rgba(255, 255, 255, 0.08);
-    --text:      #eef2f6;
-    --muted:     #8a94a6;
-    --faint:     #454f63;
-    --accent:    #2dd4f7;
-    --ember:     #8b5cf6;
-    --sand:      #a5e8f8;
-    --green:     #4ade80;
-    --accent-dim:#155e75;
+    --bg:      #0b0b0c;
+    --surface: #121214;
+    --border:  rgba(255,255,255,.09);
+    --text:    #eef2f6;
+    --muted:   #8a94a6;
+    --faint:   #454f63;
+    --accent:  #2dd4f7;
+    --green:   #4ade80;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-    --sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --display: 'Space Grotesk', var(--sans);
-    --pad: clamp(1.25rem, 5vw, 4rem);
-    --maxw: 1080px;
-    --ease: cubic-bezier(.22, .61, .36, 1);
+    --pad: clamp(1.4rem, 5vw, 4rem);
+    --maxw: 860px;
+    --ease: cubic-bezier(.22,.61,.36,1);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: var(--sans);
-    font-size: 17px;
-    line-height: 1.6;
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
   ::selection { background: var(--accent); color: #0b0b0c; }
   a { color: inherit; text-decoration: none; }
-  img { max-width: 100%; display: block; }
-
-  /* film grain */
-  body::after {
-    content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none;
-    opacity: .055; mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
-    background-size: 160px 160px;
-  }
-
-  ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: #26262a; border-radius: 8px; border: 2px solid var(--bg); }
-  ::-webkit-scrollbar-thumb:hover { background: #3a3a40; }
-
+  a:hover { color: var(--accent); }
   .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
 
-  /* ── shared bits ─────────────────────────────── */
-  .kicker {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .kicker::before { content: "// "; color: var(--accent); }
-  .section { padding: clamp(3rem, 6vw, 4.75rem) 0; border-top: 1px solid var(--border); position: relative; }
-  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
-  .sec-head h2 { font-family: var(--display); font-size: clamp(1.6rem, 3.4vw, 2.3rem); font-weight: 600; letter-spacing: -.02em; }
-
-  /* progress bar */
-  #progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: linear-gradient(90deg, var(--ember), var(--accent)); z-index: 80; box-shadow: 0 0 12px rgba(45,212,247,.6); }
-
-  /* cursor glow */
-  #glow {
-    position: fixed; top: 0; left: 0; width: 460px; height: 460px; border-radius: 50%;
-    pointer-events: none; z-index: 5; mix-blend-mode: screen; will-change: transform;
-    background: radial-gradient(circle, rgba(45,212,247,.08), rgba(139,92,246,.04) 45%, transparent 65%);
-    transform: translate3d(-9999px, -9999px, 0);
-  }
-
-  /* ── nav ─────────────────────────────────────── */
-  header {
-    position: sticky; top: 0; z-index: 60;
-    backdrop-filter: blur(14px);
-    background: color-mix(in srgb, var(--bg) 72%, transparent);
-    border-bottom: 1px solid var(--border);
-  }
-  nav { display: flex; align-items: center; justify-content: space-between; height: 62px; }
-  .brand { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+  /* ── nav ── */
+  header { border-bottom: 1px solid var(--border); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .brand { font-weight: 700; letter-spacing: -.02em; }
   .brand span { color: var(--accent); }
-  .nav-links { display: flex; gap: clamp(1rem, 2.5vw, 2rem); align-items: center; }
-  .nav-links a { font-size: 14px; color: var(--muted); transition: color .18s var(--ease); position: relative; padding: 4px 0; }
-  .nav-links a::after {
-    content: ""; position: absolute; left: 0; bottom: -2px; height: 1.5px; width: 100%;
-    background: var(--accent); transform: scaleX(0); transform-origin: right;
-    transition: transform .3s var(--ease);
-  }
-  .nav-links a:hover, .nav-links a.active { color: var(--text); }
-  .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
-  .nav-links .cta {
-    font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em;
-    color: #0b0b0c; background: var(--text);
-    padding: 8px 16px; border-radius: 999px; font-weight: 500;
-    transition: background .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
-    position: relative; overflow: hidden;
-  }
-  .nav-links .cta::after { content: ""; position: absolute; inset: 0; border-radius: inherit; display: none; }
-  .nav-links .cta:hover { background: var(--accent); color: #0b0b0c; transform: translateY(-1px); box-shadow: 0 8px 24px -8px rgba(45,212,247,.55); }
+  nav { display: flex; gap: 1.4rem; align-items: center; }
+  nav a { font-size: 12.5px; color: var(--muted); transition: color .15s var(--ease); }
+  nav a:hover, nav a.active { color: var(--text); }
+  nav a.active { color: var(--accent); }
 
-  /* ── hero ────────────────────────────────────── */
-  .hero {
-    position: relative; overflow: hidden;
-    padding: clamp(5rem, 11vw, 8.5rem) 0 clamp(4rem, 8vw, 6.5rem);
-  }
-  /* grid backdrop, fading radially */
-  .hero > .wrap { position: relative; z-index: 2; }
-  .status {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--muted); border: 1px solid var(--border); border-radius: 999px;
-    padding: 6px 14px; margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem); background: color-mix(in srgb, var(--surface) 70%, transparent);
-  }
-  .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2.4s infinite; box-shadow: 0 0 10px rgba(74,222,128,.8); }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
-  .hero h1 {
-    font-family: var(--display);
-    font-size: clamp(2.7rem, 7.6vw, 5.2rem);
-    line-height: 1.05;
-    letter-spacing: -.035em;
+  /* ── hero ── */
+  .hero { padding: clamp(4rem, 10vw, 7rem) 0 4rem; }
+  .kicker { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); }
+  h1 {
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
     font-weight: 700;
-    max-width: 14ch;
+    letter-spacing: -.04em;
+    line-height: 1.05;
+    margin: .9rem 0 1.4rem;
+    font-variant-ligatures: none;
   }
-  .hero h1 .w { display: inline-block; opacity: 0; transform: translateY(1.1em) rotate(1.5deg); animation: wordIn .85s var(--ease) forwards; animation-delay: calc(var(--i) * 95ms + 150ms); }
-  @keyframes wordIn { to { opacity: 1; transform: none; } }
-  .hero h1 .accent { color: var(--accent); text-shadow: 0 0 42px rgba(45,212,247,.35); }
-  .hero .role {
-    font-family: var(--mono); font-size: clamp(.95rem, 2vw, 1.15rem); color: var(--muted);
-    margin-top: 1.2rem; letter-spacing: .02em;
-  }
-  .hero p.intro {
-    margin-top: clamp(1.6rem, 3vw, 2.2rem); max-width: 60ch;
-    font-size: clamp(1rem, 1.7vw, 1.12rem); color: var(--muted); line-height: 1.7;
-  }
-  .hero p.intro strong { color: var(--text); font-weight: 500; }
-  .hero-ctas { display: flex; gap: 1rem; margin-top: clamp(2rem, 4vw, 2.8rem); flex-wrap: wrap; }
-  .btn {
-    display: inline-flex; align-items: center; gap: .5rem;
-    font-family: var(--mono); font-size: 13.5px; letter-spacing: .03em;
-    padding: 11px 20px; border-radius: 999px; border: 1px solid var(--border);
-    transition: all .2s var(--ease); background: transparent; color: var(--text);
-    position: relative; overflow: hidden;
-  }
-  .btn.primary {
-    background: var(--accent); border-color: var(--accent); color: #0b0b0c; font-weight: 500;
-  }
-  .btn.primary::after, .btn.ghost::after {
-    content: ""; position: absolute; top: 0; bottom: 0; width: 45%; left: -60%;
-    background: linear-gradient(105deg, transparent, rgba(255,255,255,.35) 50%, transparent);
-    transform: skewX(-20deg); transition: left .55s var(--ease);
-  }
-  .btn:hover { transform: translateY(-2px); }
-  .btn.primary:hover { background: #67e8f9; box-shadow: 0 12px 32px -10px rgba(45,212,247,.55); }
-  .btn.ghost:hover { border-color: rgba(255,255,255,.28); background: var(--surface); }
-  .btn:hover::after { left: 115%; }
-  .scroll-hint {
-    margin-top: clamp(2.5rem, 5vw, 4rem);
-    font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-    color: var(--faint); display: inline-flex; align-items: center; gap: .6rem;
-    animation: bob 2.2s var(--ease) infinite;
-  }
-  .scroll-hint .down { color: var(--accent); font-size: 14px; }
-  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  h1 .accent { color: var(--accent); }
+  .tagline { color: var(--muted); max-width: 56ch; font-size: 14.5px; }
+  .tagline b { color: var(--text); font-weight: 500; }
+  .tagline a { color: var(--accent); border-bottom: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent); }
+  .tagline a:hover { color: var(--text); border-bottom-color: var(--accent); }
+  .meta { margin-top: 1.3rem; font-size: 12px; color: var(--faint); }
 
-  /* ── game-flavored extras ────────────────────── */
-  .player {
-    display: inline-flex; align-items: center; gap: 1rem;
-    margin-top: clamp(2rem, 4vw, 2.8rem);
-    border: 1px solid var(--border); border-radius: 14px;
-    background: linear-gradient(160deg, var(--surface-2), var(--surface));
-    padding: .75rem 1.15rem .8rem; flex-wrap: wrap;
+  /* ── sections ── */
+  .section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; border-top: 1px solid var(--border); }
+  .sec-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    margin-bottom: 1.4rem;
   }
-  .pl-badge {
-    font-family: var(--display); font-weight: 700; font-size: 1.5rem; line-height: 1;
-    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-    border-radius: 10px; padding: .5rem .6rem .45rem;
-    background: color-mix(in srgb, var(--accent) 8%, transparent);
-  }
-  .pl-badge small { display: block; font-family: var(--mono); font-size: 8.5px; letter-spacing: .14em; color: var(--muted); margin-top: 2px; font-weight: 400; }
-  .pl-main { min-width: min(280px, 62vw); flex: 1; }
-  .pl-top { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
-  .pl-rank { color: var(--accent); }
-  .pl-xp { color: var(--faint); }
-  .pl-bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.07); margin: .5rem 0 .4rem; overflow: hidden; }
-  .pl-bar span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--ember), var(--accent)); box-shadow: 0 0 10px rgba(45,212,247,.5); }
-  .player.in .pl-bar span { animation: fillBar 1.2s var(--ease) .3s forwards; }
-  @keyframes fillBar { to { width: 40%; } }
-  .pl-sub { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; color: var(--muted); }
-  .pl-sub b { color: var(--text); font-weight: 500; }
+  .sec-head h2 { font-size: 13px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--text); }
+  .sec-head .idx { font-size: 11.5px; color: var(--faint); letter-spacing: .12em; }
 
-  .journey { margin-top: 2.2rem; padding-top: 1.7rem; border-top: 1px dashed var(--border); }
-  .journey-head { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-bottom: 1.5rem; }
-  .journey-head::before { content: "▸ "; color: var(--accent); }
-  .jtrack { position: relative; height: 64px; }
-  .jlane { position: absolute; top: 15px; left: 0; right: 0; height: 3px; border-radius: 2px; background: rgba(255,255,255,.08); overflow: hidden; }
-  .jfill { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--green)); box-shadow: 0 0 8px rgba(45,212,247,.5); }
-  .about-grid .reveal.in .jfill { animation: fillLane 1.4s var(--ease) .35s forwards; }
-  @keyframes fillLane { to { width: 100%; } }
-  .jnode { position: absolute; top: 0; width: 110px; }
-  .jnode::before { content: ""; display: block; width: 13px; height: 13px; border-radius: 50%; background: var(--bg); border: 2px solid var(--faint); margin-bottom: 6px; }
-  .jnode b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
-  .jnode span { font-family: var(--mono); font-size: 10px; letter-spacing: .05em; color: var(--faint); }
-  .j1 { left: 0; }
-  .j2 { left: 33.3%; transform: translateX(-50%); text-align: center; }
-  .j2::before { margin-left: auto; margin-right: auto; }
-  .j3 { left: 66.6%; transform: translateX(-50%); text-align: center; }
-  .j3::before { margin-left: auto; margin-right: auto; }
-  .j4 { left: 100%; transform: translateX(-100%); text-align: right; }
-  .j4::before { margin-left: auto; border-color: var(--green); background: var(--green); box-shadow: 0 0 12px rgba(74,222,128,.7); }
-
-  .quest-no { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); margin-bottom: .45rem; }
-  .quest-no.now { color: var(--accent); }
-  .chapters { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .55rem; }
-  .ch { font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; background: color-mix(in srgb, var(--bg) 55%, transparent); }
-  .ch.current { border-color: color-mix(in srgb, var(--green) 55%, transparent); color: var(--green); background: color-mix(in srgb, var(--green) 8%, transparent); display: inline-flex; align-items: center; gap: 5px; }
-  .ch.current::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px rgba(74,222,128,.8); animation: pulse 2s infinite; }
-
-  /* tag pop-in on skill grid reveal */
-  .skill-grid.in .tag { animation: popIn .45s var(--ease) both; }
-  .skill-group .tag:nth-child(1) { animation-delay: .04s; }
-  .skill-group .tag:nth-child(2) { animation-delay: .09s; }
-  .skill-group .tag:nth-child(3) { animation-delay: .14s; }
-  .skill-group .tag:nth-child(4) { animation-delay: .19s; }
-  .skill-group .tag:nth-child(5) { animation-delay: .24s; }
-  .skill-group .tag:nth-child(6) { animation-delay: .29s; }
-  .skill-group .tag:nth-child(7) { animation-delay: .34s; }
-  .skill-group .tag:nth-child(8) { animation-delay: .39s; }
-  .skill-group .tag:nth-child(9) { animation-delay: .44s; }
-  .skill-group .tag:nth-child(10) { animation-delay: .49s; }
-  @keyframes popIn { from { opacity: 0; transform: translateY(6px) scale(.92); } to { opacity: 1; transform: none; } }
-
-  /* ── canvases & overlays ─────────────────────── */
-  #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-  .hero-grade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse 72% 62% at 50% 46%, rgba(5,6,10,.6), transparent 62%), linear-gradient(180deg, rgba(5,6,10,.55), transparent 28%, transparent 68%, rgba(5,6,10,.62)); }
-  .hud { position: absolute; right: var(--pad); bottom: 1.3rem; z-index: 3; display: flex; align-items: center; gap: .55rem; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: var(--faint); }
-  .squig { display: block; width: min(300px, 42%); margin-top: .7rem; color: var(--accent); filter: drop-shadow(0 0 6px rgba(45,212,247,.4)); }
-  .hud .hud-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,.8); animation: pulse 1.6s infinite; }
-  .hud .hud-f { color: var(--muted); }
-  #fx-canvas { position: fixed; inset: 0; z-index: 180; pointer-events: none; }
-  #boot { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .5s ease, visibility .5s; }
-  #boot.done { opacity: 0; visibility: hidden; pointer-events: none; }
-  .boot-card { width: min(420px, calc(100% - 3rem)); border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(160deg, var(--surface-2), var(--surface)); padding: 1.6rem 1.7rem 1.4rem; box-shadow: 0 30px 80px -30px rgba(0,0,0,.8); }
-  .boot-title { font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: .01em; }
-  .boot-title span { color: var(--accent); }
-  .boot-line { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: .45rem; min-height: 1.2em; }
-  .boot-bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.08); margin-top: 1.2rem; overflow: hidden; }
-  .boot-bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ember), var(--accent)); box-shadow: 0 0 12px rgba(45,212,247,.5); }
-  .boot-skip { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: .95rem; text-align: center; }
-  .boot-pct { font-family: var(--display); font-weight: 700; font-size: 1.7rem; color: var(--accent); text-align: right; margin-top: .5rem; line-height: 1; }
-  #cbTop, #cbBottom { position: fixed; left: 0; right: 0; height: 9vh; background: #050506; z-index: 215; pointer-events: none; transition: transform 1s var(--ease); }
-  #cbTop { top: 0; transform: translateY(-110%); }
-  #cbBottom { bottom: 0; transform: translateY(110%); }
-  body.bars-in #cbTop { transform: translateY(0); }
-  body.bars-in #cbBottom { transform: translateY(0); }
-  body.bars-up #cbTop { transform: translateY(-110%); }
-  body.bars-up #cbBottom { transform: translateY(110%); }
-  .caret { color: var(--accent); animation: blink 1s steps(2) infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-  #victory { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; pointer-events: none; }
-  body.victory #victory { display: flex; }
-  .v-txt { font-family: var(--display); font-weight: 700; font-size: clamp(2.4rem, 8vw, 5rem); letter-spacing: -.03em; color: var(--accent); text-shadow: 0 0 60px rgba(45,212,247,.8); animation: vicPop .5s var(--ease) both; }
-  .v-sub { font-family: var(--mono); font-size: 12.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: .6rem; text-align: center; animation: vicPop .5s var(--ease) .15s both; }
-  @keyframes vicPop { from { transform: scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
-  .cv-f { position: absolute; width: 10px; height: 10px; border-radius: 50%; right: 16%; bottom: 20%; opacity: .8; background: color-mix(in srgb, var(--card-accent) 85%, transparent); box-shadow: 0 0 16px color-mix(in srgb, var(--card-accent) 75%, transparent); animation: floaty 4.6s var(--ease) infinite; }
-  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-  .foot-l { display: grid; gap: .3rem; }
-  .foot .hint { font-size: 10.5px; letter-spacing: .18em; color: var(--faint); opacity: .8; }
-
-  /* ── season archive strip ────────────────────── */
-  .seasons { margin-top: 1.2rem; }
-  .seasons-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
-  .seasons-head .kicker { font-size: 10.5px; }
-  .seasons-count { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--faint); }
-  .strip { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 10px; scrollbar-width: none; }
-  .strip::-webkit-scrollbar { display: none; }
-  .scard { position: relative; flex: 0 0 232px; scroll-snap-align: start; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s; }
-  .scard:hover, .scard:focus-visible { transform: translateY(-3px); border-color: rgba(45,212,247,.45); box-shadow: 0 18px 40px -18px rgba(0,0,0,.7), 0 0 30px -8px rgba(45,212,247,.25); }
-  .scard img { width: 100%; aspect-ratio: 16/11; object-fit: cover; transition: transform .5s var(--ease); display: block; }
-  .scard:hover img { transform: scale(1.07); }
-  .sc-meta { display: grid; gap: .1rem; padding: .65rem .8rem .7rem; }
-  .sc-meta b { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--accent); }
-  .sc-meta span { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; color: var(--text); text-transform: uppercase; }
-  .sc-meta em { font-size: 11px; color: var(--faint); font-style: normal; font-family: var(--mono); }
-  .scard.current { border-color: rgba(74,222,128,.5); box-shadow: 0 0 0 1px rgba(74,222,128,.25), 0 0 36px -8px rgba(74,222,128,.35); }
-  .sc-note { position: absolute; top: 10px; right: 10px; font-family: var(--mono); font-size: 9.5px; letter-spacing: .16em; color: #0b0b0c; background: var(--green); padding: 4px 9px; border-radius: 999px; font-weight: 500; box-shadow: 0 0 14px rgba(74,222,128,.7); }
-  #seasonLightbox { position: fixed; inset: 0; z-index: 220; background: rgba(5,5,6,.9); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
-  #seasonLightbox.open { display: flex; }
-  #seasonLightbox img { max-width: min(92vw, 1100px); max-height: 78vh; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 40px 120px -30px rgba(0,0,0,.9); }
-  .lb-cap { font-family: var(--mono); font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .lb-close { position: absolute; top: 20px; right: 24px; font-family: var(--mono); font-size: 13px; color: var(--muted); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; cursor: pointer; transition: color .2s var(--ease), border-color .2s var(--ease); }
-  .lb-close:hover { color: var(--accent); border-color: rgba(45,212,247,.5); }
-
-  /* ── marquee ─────────────────────────────────── */
-  .marquee {
-    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    overflow: hidden; padding: 15px 0; background: color-mix(in srgb, var(--surface) 45%, transparent);
+  /* ── work rows ── */
+  .work-row {
+    display: flex; gap: 1.4rem; align-items: baseline;
+    padding: 1.05rem .4rem;
+    border-top: 1px solid var(--border);
+    transition: background .18s var(--ease);
     position: relative;
   }
-  .mq-track { display: flex; gap: 0; width: max-content; animation: slide 32s linear infinite; }
-  .marquee:hover .mq-track { animation-play-state: paused; }
-  @keyframes slide { to { transform: translateX(-50%); } }
-  .mq-group { display: flex; align-items: center; gap: 2.6rem; padding-right: 2.6rem; }
-  .mq-item {
-    display: inline-flex; align-items: center; gap: 2.6rem; white-space: nowrap;
-    font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
-  }
-  .mq-item::after { content: "✦"; color: var(--accent); font-size: 10px; opacity: .8; }
+  .work-row:nth-last-of-type(1) { border-bottom: 1px solid var(--border); }
+  .work-row:hover { background: color-mix(in srgb, var(--surface) 55%, transparent); }
+  .work-row .no { color: var(--faint); font-size: 12.5px; flex: 0 0 34px; }
+  .work-row .body { flex: 1; min-width: 0; }
+  .work-row .body .t { font-weight: 700; font-size: 15px; }
+  .work-row .body .t a { border-bottom: 1px solid transparent; }
+  .work-row .body .t a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .work-row .body .d { color: var(--faint); font-size: 12.5px; margin-top: .15rem; }
+  .work-row .yr { color: var(--faint); font-size: 12px; white-space: nowrap; }
 
-  /* ── about strip ─────────────────────────────── */
-  .about-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
-  @media (min-width: 860px) {
-    .about-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 4rem; }
-    .about-grid > .stats { padding-top: .35rem; }
-  }
-  .about-grid p { color: var(--muted); font-size: 1.03rem; line-height: 1.75; max-width: 60ch; }
-  .about-grid p + p { margin-top: 1.1rem; }
-  .about-grid p strong { color: var(--text); font-weight: 500; }
-  .stats { display: grid; gap: 1.1rem; align-content: start; }
-  .stat {
-    border: 1px solid var(--border); background: linear-gradient(160deg, var(--surface-2), var(--surface));
-    border-radius: 14px; padding: 1.15rem 1.3rem; position: relative; overflow: hidden;
-    transition: border-color .25s var(--ease), transform .25s var(--ease);
-  }
-  .stat::before {
-    content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(120% 120% at 100% 0%, rgba(45,212,247,.12), transparent 55%);
-    opacity: 0; transition: opacity .3s var(--ease);
-  }
-  .stat:hover { border-color: rgba(45,212,247,.35); transform: translateY(-2px); }
-  .stat:hover::before { opacity: 1; }
-  .stat .n { font-family: var(--display); font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; position: relative; }
-  .stat .n em { font-style: normal; color: var(--accent); }
-  .stat .n .suf { color: var(--accent); }
-  .stat .l { font-size: 13px; color: var(--muted); font-family: var(--mono); letter-spacing: .05em; margin-top: .15rem; position: relative; }
+  /* case study (Discover) */
+  details.case { border: 0; }
+  details.case summary { cursor: pointer; list-style: none; display: flex; gap: 1.4rem; align-items: baseline; }
+  details.case summary::-webkit-details-marker { display: none; }
+  details.case summary .marker { color: var(--accent); font-size: 12px; margin-left: auto; transition: transform .2s var(--ease); }
+  details.case[open] summary .marker { transform: rotate(90deg); }
+  .case-list { margin: 1.1rem 0 .6rem 48px; display: grid; gap: .8rem; border-left: 2px solid color-mix(in srgb, var(--accent) 25%, transparent); padding-left: 1.2rem; }
+  .case-row { font-size: 13px; line-height: 1.65; color: var(--muted); }
+  .case-row b { color: var(--accent); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: .1rem; }
 
-  /* ── work cards ──────────────────────────────── */
-  .work-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
-  @media (min-width: 920px) { .work-grid { grid-template-columns: 1fr 1fr; } }
-  .card {
-    --card-accent: var(--accent);
-    display: flex; flex-direction: column;
-    border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
-    background: linear-gradient(180deg, var(--surface-2) 0%, color-mix(in srgb, var(--surface) 85%, transparent) 100%);
-    transition: transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease);
-    position: relative;
-  }
-  .card:hover, .card:focus-visible {
-    transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--card-accent) 50%, transparent);
-    box-shadow: 0 24px 50px -22px rgba(0,0,0,.65), 0 0 0 1px color-mix(in srgb, var(--card-accent) 22%, transparent), 0 0 60px -12px color-mix(in srgb, var(--card-accent) 28%, transparent);
-  }
-  .c1 { --card-accent: var(--accent); }
-  .c2 { --card-accent: var(--ember); }
-  .c3 { --card-accent: var(--sand); }
-  .c4 { --card-accent: var(--accent); }
-
-  .card-visual {
-    position: relative; height: 128px; overflow: hidden; flex-shrink: 0;
-    background:
-      radial-gradient(90% 140% at 85% -20%, color-mix(in srgb, var(--card-accent) 26%, transparent), transparent 60%),
-      radial-gradient(70% 120% at 10% 120%, color-mix(in srgb, var(--card-accent) 14%, transparent), transparent 55%),
-      linear-gradient(180deg, color-mix(in srgb, var(--card-accent) 7%, var(--bg)), var(--surface));
-  }
-  .card-visual::before {
-    content: ""; position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-    background-size: 26px 26px;
-    -webkit-mask-image: linear-gradient(180deg, black, transparent 90%);
-    mask-image: linear-gradient(180deg, black, transparent 90%);
-  }
-  .card-visual::after {
-    content: ""; position: absolute; top: 0; bottom: 0; width: 55%; left: -70%;
-    background: linear-gradient(105deg, transparent, rgba(255,255,255,.09) 50%, transparent);
-    transform: skewX(-20deg); transition: left .7s var(--ease);
-  }
-  .card:hover .card-visual::after, .card:focus-visible .card-visual::after { left: 130%; }
-  .cv-num {
-    position: absolute; right: 14px; bottom: -18px;
-    font-family: var(--display); font-weight: 700; font-size: 86px; line-height: 1;
-    color: transparent; -webkit-text-stroke: 1px color-mix(in srgb, var(--card-accent) 45%, transparent);
-    letter-spacing: -.04em; user-select: none;
-    transition: -webkit-text-stroke-color .3s var(--ease), transform .35s var(--ease);
-  }
-  .card:hover .cv-num { -webkit-text-stroke-color: color-mix(in srgb, var(--card-accent) 80%, transparent); transform: translateY(-4px); }
-  .cv-label {
-    position: absolute; top: 12px; left: 14px;
-    font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
-    color: color-mix(in srgb, var(--card-accent) 75%, var(--muted));
-  }
-  .card-body { padding: 1.25rem 1.3rem 1.35rem; display: flex; flex-direction: column; gap: .15rem; flex: 1; }
-  .card h3 { font-family: var(--display); font-size: 1.32rem; font-weight: 600; letter-spacing: -.015em; display: flex; align-items: center; gap: .6rem; transition: color .25s var(--ease); }
-  .card:hover h3 { color: var(--card-accent); }
-  .card h3 .arrow { color: var(--card-accent); opacity: 0; transform: translateX(-8px); transition: all .25s var(--ease); font-size: .85em; }
-  .card:hover h3 .arrow, .card:focus-visible h3 .arrow { opacity: 1; transform: translateX(0); }
-  .card .meta { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: .35rem; }
-  .card .meta b { color: var(--card-accent); font-weight: 500; }
-  .card p { color: var(--muted); font-size: .93rem; line-height: 1.65; margin-top: .5rem; flex: 1; }
-  .tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .9rem; }
-  .tag {
-    font-family: var(--mono); font-size: 11.5px; letter-spacing: .03em;
-    color: var(--muted); border: 1px solid var(--border); border-radius: 6px;
-    padding: 3px 9px; background: color-mix(in srgb, var(--bg) 60%, transparent); white-space: nowrap;
-    transition: all .18s var(--ease);
-  }
-  .tag:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg)); transform: translateY(-1px); }
-
-  /* ── experience timeline ─────────────────────── */
-  .timeline { display: grid; gap: 0; }
-  .job {
-    display: grid; gap: .4rem 2.5rem; padding: clamp(1.3rem, 3vw, 1.8rem) 0;
-    border-top: 1px solid var(--border); position: relative;
-    transition: background .25s var(--ease);
-  }
-  .job:first-child { border-top: none; }
-  .job:hover { background: color-mix(in srgb, var(--surface) 55%, transparent); }
-  @media (min-width: 860px) {
-    .job { grid-template-columns: 150px minmax(0, 1fr); padding-left: 1rem; padding-right: 1rem; margin: 0 -1rem; border-radius: 12px; }
-    .job::before {
-      content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 2px;
-      background: linear-gradient(var(--accent), var(--ember));
-      border-radius: 2px; transform: scaleY(0); transform-origin: top;
-      transition: transform .3s var(--ease);
-    }
-    .job:hover::before { transform: scaleY(1); }
-  }
-  .job .when {
-    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
-    color: var(--faint); text-transform: uppercase; padding-top: .35rem;
-  }
-  .job h3 { font-family: var(--display); font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; }
-  .job h3 span { color: var(--faint); font-weight: 400; }
-  .job .co { font-family: var(--mono); font-size: 12.5px; color: var(--accent); letter-spacing: .04em; margin-top: .15rem; display: inline-block; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent); padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 6%, transparent); }
-  .job ul { list-style: none; margin-top: .6rem; display: grid; gap: .4rem; }
-  .job .desc { color: var(--muted); font-size: .95rem; line-height: 1.7; margin-top: .6rem; max-width: 62ch; }
-
-  /* ── skills ──────────────────────────────────── */
-  .skill-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
-
-  .nav-links .cta2 {
-    font-size: 13.5px; padding: 8px 16px; border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    color: var(--accent); transition: all .18s var(--ease);
-  }
-  .nav-links .cta2:hover { background: var(--accent); color: #0b0b0c; box-shadow: 0 8px 24px -8px rgba(45,212,247,.5); }
-  .card-wide { grid-column: 1 / -1; }
-  .case-list { margin-top: 1.1rem; display: grid; gap: .8rem; }
-  .case-row { display: flex; gap: .9rem; font-size: .94rem; line-height: 1.62; color: var(--muted); }
-  .case-row b { color: var(--accent); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; flex: 0 0 88px; padding-top: .15rem; }
-  .case-row span { flex: 1; }
-  details.others { margin-top: 1.4rem; border: 1px dashed var(--border); border-radius: 14px; background: color-mix(in srgb, var(--surface) 55%, transparent); }
-  details.others summary { cursor: pointer; padding: 1rem 1.3rem; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); list-style: none; user-select: none; }
+  /* other builds */
+  details.others { margin-top: 1.3rem; }
+  details.others summary { cursor: pointer; list-style: none; font-size: 12.5px; color: var(--muted); padding: .6rem .4rem; letter-spacing: .08em; }
   details.others summary::-webkit-details-marker { display: none; }
   details.others summary:hover { color: var(--accent); }
+  details.others summary::before { content: "▸ "; color: var(--faint); }
+  details.others[open] summary::before { content: "▾ "; }
   details.others[open] summary { color: var(--accent); }
-  .other-row { display: flex; flex-wrap: wrap; gap: .7rem 1.4rem; padding: 0 1.3rem 1.15rem; align-items: baseline; }
-  .other-row a { font-size: 13.5px; color: var(--muted); border-bottom: 1px dashed var(--border); transition: color .18s var(--ease); }
+  .other-row { display: flex; flex-wrap: wrap; gap: .55rem 1.4rem; padding: .2rem .4rem 1rem 1.6rem; }
+  .other-row a { font-size: 13px; color: var(--faint); border-bottom: 1px dashed var(--border); }
   .other-row a:hover { color: var(--accent); }
-  @media (min-width: 700px) { .skill-grid { grid-template-columns: 1fr 1fr; } }
-  .skill-group {
-    border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem 1.4rem;
-    background: linear-gradient(160deg, var(--surface-2), var(--surface));
-    transition: border-color .25s var(--ease), transform .25s var(--ease);
-  }
-  .skill-group:hover { border-color: rgba(45,212,247,.32); transform: translateY(-2px); }
-  .skill-group h3 { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
-  .skill-group h3::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px rgba(45,212,247,.7); }
-  .skill-group .tags { margin-top: 0; }
 
-  /* ── contact ─────────────────────────────────── */
-  .contact { text-align: left; overflow: hidden; }
-  .contact .wrap { position: relative; }
-  .contact::before {
-    content: ""; position: absolute; inset: auto 0 -40% 0; height: 130%; pointer-events: none;
-    background: radial-gradient(60% 90% at 22% 0%, rgba(45,212,247,.13), transparent 70%);
+  /* ── experience ── */
+  .xp-row {
+    display: grid; grid-template-columns: 132px minmax(0, 1fr);
+    gap: 1.4rem; padding: 1.05rem .4rem;
+    border-top: 1px solid var(--border);
   }
-  .contact h2 { font-family: var(--display); font-size: clamp(2rem, 5.5vw, 3.4rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.08; max-width: 16ch; position: relative; }
-  .contact h2 em { font-style: normal; color: var(--accent); }
-  .contact .mail {
-    display: inline-block; margin-top: 1.8rem;
-    font-family: var(--mono); font-size: clamp(1rem, 2vw, 1.2rem); letter-spacing: .02em;
-    color: var(--text); padding-bottom: 3px; position: relative;
-    transition: color .2s var(--ease);
-  }
-  .contact .mail::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px;
-    background: linear-gradient(90deg, var(--accent), var(--ember));
-    background-size: 200% 100%; transition: background-position .3s var(--ease);
-  }
-  .contact .mail:hover { color: var(--accent); }
-  .contact .mail:hover::after { background-position: 100% 0; }
-  .contact .base {
-    margin-top: .9rem; font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
-    color: var(--faint); display: flex; align-items: center; gap: .5rem;
-  }
-  .contact .base::before { content: "●"; color: var(--green); font-size: 8px; }
-  .socials { display: flex; gap: 1.6rem; margin-top: 2.2rem; flex-wrap: wrap; position: relative; }
-  .socials a {
-    font-family: var(--mono); font-size: 13px; letter-spacing: .05em; color: var(--muted);
-    display: inline-flex; align-items: center; gap: .45rem; transition: color .18s var(--ease), transform .18s var(--ease);
-  }
-  .socials a::before { content: "↗"; color: var(--accent); font-size: 11px; transition: color .18s var(--ease); }
-  .socials a:hover { color: var(--text); transform: translateY(-2px); }
-  .socials a:hover::before { color: var(--ember); }
+  .xp-row:last-of-type { border-bottom: 1px solid var(--border); }
+  .xp-row .when { color: var(--faint); font-size: 12px; padding-top: .2rem; }
+  .xp-row .what h3 { font-size: 15px; font-weight: 700; }
+  .xp-row .what .co { color: var(--faint); font-size: 12.5px; margin-top: .1rem; }
+  .xp-row .what .ch { color: var(--accent); font-size: 11.5px; margin-top: .3rem; letter-spacing: .04em; }
+  .xp-row .what .desc { color: var(--muted); font-size: 13px; margin-top: .5rem; max-width: 62ch; }
 
-  /* ── footer ──────────────────────────────────── */
-  footer { border-top: 1px solid var(--border); padding: 2rem 0 2.5rem; }
-  .foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .foot p { font-family: var(--mono); font-size: 12px; color: var(--faint); letter-spacing: .04em; }
-  .foot .top { font-family: var(--mono); font-size: 12px; color: var(--muted); border: 1px solid var(--border); padding: 7px 14px; border-radius: 999px; transition: all .18s var(--ease); }
-  .foot .top:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+  /* ── skills ── */
+  .line { padding: .5rem .4rem; }
+  .line .lab { color: var(--faint); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: .3rem; }
+  .line .v { color: var(--muted); font-size: 13.5px; }
+  .line .v b { color: var(--text); font-weight: 400; }
 
-  /* ── reveal on scroll ────────────────────────── */
-  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: var(--d, 0s); }
+  /* ── contact ── */
+  .mail { display: block; font-size: clamp(1.3rem, 3.4vw, 1.9rem); font-weight: 700; letter-spacing: -.02em; margin: .3rem 0 .9rem; }
+  .mail:hover { color: var(--accent); }
+  .socials { display: flex; flex-wrap: wrap; gap: 1.4rem; font-size: 13px; color: var(--muted); }
+  .socials a { border-bottom: 1px dashed var(--border); }
+  .socials a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .base { color: var(--faint); font-size: 12px; margin-top: .9rem; }
+
+  footer { border-top: 1px solid var(--border); }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; height: 64px; font-size: 11.5px; color: var(--faint); }
+  footer .top { color: var(--muted); }
+  footer .top:hover { color: var(--accent); }
+
+  /* ── konami easter egg ── */
+  #sys {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: .14em; color: var(--green);
+    opacity: 0; transition: opacity .6s var(--ease); pointer-events: none;
+    text-shadow: 0 0 12px rgba(74,222,128,.5); z-index: 99;
+  }
+  #sys.on { opacity: 1; }
+
+  /* ── reveal ── */
+  .reveal { opacity: 0; transform: translateY(10px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
   .reveal.in { opacity: 1; transform: none; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .reveal { opacity: 1; transform: none; transition: none; }
-    .hero h1 .w { opacity: 1; transform: none; animation: none; }
-    .status .dot, .scroll-hint { animation: none; }
-    .orb { animation: none; }
-    .mq-track { animation: none; width: auto; flex-wrap: wrap; }
-    .player.in .pl-bar span, .about-grid .reveal.in .jfill { animation: none; }
-    .player.in .pl-bar span { width: 40%; }
-    .about-grid .reveal.in .jfill { width: 100%; }
-    .skill-grid.in .tag { animation: none; opacity: 1; }
-    .caret { animation: none; opacity: .7; }
-    .cv-f { animation: none; }
-    #boot { display: none; }
-    #glow { display: none; }
-    * { transition-duration: .01ms !important; }
+  }
+  @media (max-width: 620px) {
+    .xp-row { grid-template-columns: 1fr; gap: .4rem; }
+    .case-list { margin-left: 0; }
+    .work-row .yr { display: none; }
+    footer .wrap { height: auto; padding: 1.1rem 0; }
   }
 
   /* focus states */
-  a:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 </style>
 </head>
 <body>
 
-<!-- cinematic letterbox bars (trailer frame during the lobby) -->
-<div id="cbTop" aria-hidden="true"></div>
-<div id="cbBottom" aria-hidden="true"></div>
-
-<!-- matchmaking intro — first visit only -->
-<div id="boot" aria-hidden="true">
-  <div class="boot-card">
-    <div class="boot-title">RUDRA_PATEL <span>// LOBBY</span></div>
-    <div class="boot-line">MAP: PORTFOLIO</div>
-    <div class="boot-bar"><span></span></div>
-    <div class="boot-pct">0%</div>
-    <div class="boot-skip">click to skip</div>
-  </div>
-</div>
-
-<!-- victory flash + confetti layer -->
-<div id="victory" aria-hidden="true">
-  <div>
-    <div class="v-txt">SYSTEM OVERRIDE</div>
-    <div class="v-sub">operator: RUDRA_PATEL · clearance granted</div>
-  </div>
-</div>
-<canvas id="fx-canvas" aria-hidden="true"></canvas>
-
-<div id="progress"></div>
-<div id="glow" aria-hidden="true"></div>
-
 <header>
   <div class="wrap">
+    <a class="brand" href="#top">rudra<span>.</span>patel</a>
     <nav>
-      <a class="brand" href="#top">rudra<span>.</span>patel</a>
-      <div class="nav-links">
-        <a href="#experience">Experience</a>
-        <a href="#work">Work</a>
-        <a href="#skills">Skills</a>
-        <a class="cta" href="#contact">Say hi</a>
-        <a class="cta2" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
-      </div>
+      <a href="#work">work</a>
+      <a href="#experience">experience</a>
+      <a href="#skills">skills</a>
+      <a href="assets/resume.pdf" target="_blank" rel="noopener">resume</a>
     </nav>
   </div>
 </header>
@@ -608,364 +201,192 @@
 <main id="top">
 
   <!-- ═══ HERO ═══ -->
-  <section class="hero">
-    <canvas id="hero-canvas" aria-hidden="true"></canvas>
-    <div class="hero-grade" aria-hidden="true"></div>
-    <div class="wrap">
-      <div class="status"><span class="dot"></span>Online — currently shipping Ch7 · S3 Runners</div>
-      <h1>
-        <span class="w" style="--i:0">Live</span> <span class="w" style="--i:1">games.</span>
-        <span class="w" style="--i:2">Better</span> <span class="w" style="--i:3">questions.</span>
-        <span class="w accent" style="--i:4">Clearer</span> <span class="w accent" style="--i:5">decisions.</span>
-      </h1>
-      <svg class="squig" viewBox="0 0 220 22" aria-hidden="true"><path d="M3 15 Q 30 3 58 12 T 116 11 T 174 14 T 217 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity="0.9"/></svg>
-      <div class="role">Rudra Patel · <span id="type">Live Ops &amp; Analytics · Fortnite Discover</span><span class="caret">▌</span> · Los Angeles</div>
-      <p class="intro">
-        I use <strong>SQL, dashboards, and experiments</strong> to see which Fortnite Discover
-        surfaces actually hold players — then feed that back into what launches next. That's the
-        job I run at Epic Games, and the habit I bring everywhere: <strong>M.S. Applied Data
-        Science, USC</strong>, live ops for games that never go offline.
-      </p>
-      <div class="hero-ctas">
-        <a class="btn primary" href="#work">See how I measure games</a>
-        <a class="btn ghost" href="https://github.com/Rudra5417" target="_blank" rel="noopener">GitHub ↗</a>
-      </div>
-
-      <div class="player reveal" style="--d:.25s">
-        <div class="pl-badge">35<small>LVL</small></div>
-        <div class="pl-main">
-          <div class="pl-top"><span class="pl-rank">Rank: Operator</span><span class="pl-xp">Content Ops XP</span></div>
-          <div class="pl-bar"><span></span></div>
-          <div class="pl-sub"><b>Epic Games · Fortnite Discover</b> — Los Angeles · 200+ surfaces maintained</div>
-        </div>
-      </div>
-
-      <div class="scroll-hint">scroll <span class="down">↓</span></div>
-      <div class="hud" aria-hidden="true">
-        <span class="hud-dot"></span>
-        <span>UPLINK STABLE</span>
-        <span class="hud-f" id="hudFrame">F·000000</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ MARQUEE ═══ -->
-  <div class="marquee" aria-hidden="true">
-    <div class="mq-track">
-      <div class="mq-group">
-        <span class="mq-item">Fortnite Discover</span><span class="mq-item">Live Operations</span><span class="mq-item">A/B Testing</span><span class="mq-item">Release Management</span><span class="mq-item">SQL</span><span class="mq-item">Databricks</span><span class="mq-item">Grafana</span><span class="mq-item">OpenSearch</span><span class="mq-item">Python</span><span class="mq-item">TensorFlow</span><span class="mq-item">BigQuery</span><span class="mq-item">FastAPI</span><span class="mq-item">Unity SDK</span><span class="mq-item">Los Angeles</span><span class="mq-item">Ch6 · The Simpsons</span><span class="mq-item">Ch7 · Pacific Break</span><span class="mq-item">Ch7 · Showdown</span><span class="mq-item">Ch7 · Runners</span>
-      </div>
-      <div class="mq-group">
-        <span class="mq-item">Fortnite Discover</span><span class="mq-item">Live Operations</span><span class="mq-item">A/B Testing</span><span class="mq-item">Release Management</span><span class="mq-item">SQL</span><span class="mq-item">Databricks</span><span class="mq-item">Grafana</span><span class="mq-item">OpenSearch</span><span class="mq-item">Python</span><span class="mq-item">TensorFlow</span><span class="mq-item">BigQuery</span><span class="mq-item">FastAPI</span><span class="mq-item">Unity SDK</span><span class="mq-item">Los Angeles</span><span class="mq-item">Ch6 · The Simpsons</span><span class="mq-item">Ch7 · Pacific Break</span><span class="mq-item">Ch7 · Showdown</span><span class="mq-item">Ch7 · Runners</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ ABOUT ═══ -->
-  <section class="section" id="about">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <h2>About</h2>
-        <span class="kicker">who I am</span>
-      </div>
-      <div class="about-grid">
-        <div class="reveal" style="--d:.05s">
-          <p>
-            I work where <strong>live-service content meets data</strong>: what we ship, who it
-            reaches, whether they stay, and what we change next week. That through-line runs from
-            DRDO (atmospheric-turbulence ML on 3.5M+ images) through game analytics at Easley-Dunn
-            and an analytics portal at AWS, to running Fortnite Discover at Epic Games.
-          </p>
-          <p>
-            Proof of the habit, in three places: <strong>Fortnite Discover</strong> — content, to
-            surfaces, to health and performance, reviewed and refed every week; <strong>Easley-Dunn</strong>
-            — one experiment, one cohort split, one feature, taking player retention from
-            60% to 80%; and <strong>dashboards built to answer the next question</strong>, not just
-            report the last one.
-          </p>
-          <div class="journey">
-            <div class="journey-head">Career XP — four quests</div>
-            <div class="jtrack">
-              <div class="jlane"><span class="jfill"></span></div>
-              <div class="jnode j1"><b>DRDO</b><span>Apprentice</span></div>
-              <div class="jnode j2"><b>Easley-Dunn</b><span>Engineer</span></div>
-              <div class="jnode j3"><b>AWS</b><span>Analyst</span></div>
-              <div class="jnode j4"><b>Epic</b><span>Operator — now</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="stats reveal" style="--d:.12s">
-          <div class="stat"><div class="n"><em class="count" data-count="35">0</em><span class="suf">+</span> <span class="suf">/mo</span></div><div class="l">Fortnite Discover updates</div></div>
-          <div class="stat"><div class="n"><em class="count" data-count="200">0</em><span class="suf">+</span></div><div class="l">content surfaces managed</div></div>
-          <div class="stat"><div class="n"><em class="count" data-count="40">0</em><span class="suf">%</span></div><div class="l">monitoring effort cut</div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ EXPERIENCE ═══ -->
-  <section class="section" id="experience">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <h2>Experience</h2>
-        <span class="kicker">quest log</span>
-      </div>
-      <div class="timeline">
-
-        <div class="job reveal">
-          <div class="when"><div class="quest-no now">◆ Quest 04 — in progress</div>Aug 2025 — now</div>
-          <div>
-            <h3>Discover Operations Manager <span>@</span></h3>
-            <div class="co">Epic Games · Fortnite</div>
-            <div class="chapters">
-              <span class="ch">Ch6 · MS2 — The Simpsons</span>
-              <span class="ch">Ch7 · S1 — Pacific Break</span>
-              <span class="ch">Ch7 · S2 — Showdown</span>
-              <span class="ch current">Ch7 · S3 — Runners</span>
-            </div>
-            <p class="desc">I own the live health of Fortnite Discover end to end — from the moment content is validated to the moment it lands on a surface, season after season, The Simpsons through Runners. The dashboards and alerting I run track every surface on every drop, so a problem gets found in minutes instead of after the community points it out. And the experiments I run decide what earns a longer stay — I watch what holds players, then feed that straight back into what launches next.</p>
-            <div class="seasons reveal" style="--d:.1s">
-              <div class="seasons-head">
-                <span class="kicker">the seasons I've shipped</span>
-                <span class="seasons-count">SCROLL →</span>
-              </div>
-              <div class="strip" id="seasonStrip">
-                <a class="scard" href="assets/seasons/c6ms2_simpsons.jpg" data-full="assets/seasons/c6ms2_simpsons.jpg">
-                  <img src="assets/seasons/c6ms2_simpsons.jpg" alt="Chapter 6 Mini Season 2 — The Simpsons" loading="lazy">
-                  <span class="sc-meta"><b>Ch6 · MS2</b><span>The Simpsons</span><em>where the run began</em></span>
-                </a>
-                <a class="scard" href="assets/seasons/c7s1_pacificbreak.jpg" data-full="assets/seasons/c7s1_pacificbreak.jpg">
-                  <img src="assets/seasons/c7s1_pacificbreak.jpg" alt="Chapter 7 Season 1 — Pacific Break" loading="lazy">
-                  <span class="sc-meta"><b>Ch7 · S1</b><span>Pacific Break</span><em>chapter 7 opens</em></span>
-                </a>
-                <a class="scard" href="assets/seasons/c7s2_showdown.jpg" data-full="assets/seasons/c7s2_showdown.jpg">
-                  <img src="assets/seasons/c7s2_showdown.jpg" alt="Chapter 7 Season 2 — Showdown" loading="lazy">
-                  <span class="sc-meta"><b>Ch7 · S2</b><span>Showdown</span><em>high-stakes season</em></span>
-                </a>
-                <a class="scard current" href="assets/seasons/c7s3_runners.jpg" data-full="assets/seasons/c7s3_runners.jpg">
-                  <img src="assets/seasons/c7s3_runners.jpg" alt="Chapter 7 Season 3 — Runners" loading="lazy">
-                  <span class="sc-note">NOW</span>
-                  <span class="sc-meta"><b>Ch7 · S3</b><span>Runners</span><em>current season</em></span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="job reveal" style="--d:.06s">
-          <div class="when"><div class="quest-no">◆ Quest 03 — complete</div>Feb 2025 — Jul 2025</div>
-          <div>
-            <h3>Senior Business Analyst <span>@</span></h3>
-            <div class="co">Amazon Web Services</div>
-            <p class="desc">I turned months of stakeholder interviews into the spec for an internal marketing-data portal — something teams started asking for before it even shipped. It was built to answer one question at a time: which campaigns were pulling spend, which pipeline lagged, and what the next quarter should bet on.</p>
-          </div>
-        </div>
-
-        <div class="job reveal" style="--d:.12s">
-          <div class="when"><div class="quest-no">◆ Quest 02 — complete</div>Oct 2024 — Feb 2025</div>
-          <div>
-            <h3>Software Engineer, Game Analytics <span>@</span></h3>
-            <div class="co">Easley-Dunn Productions</div>
-            <p class="desc">I built the analytics backbone for a small studio — dashboards the team checked every morning, and a quiet retention push that took the 5,000-player base from 60% to 80% stickiness: one experiment, one cohort split, one feature that kept players coming back.</p>
-          </div>
-        </div>
-
-        <div class="job reveal" style="--d:.18s">
-          <div class="when"><div class="quest-no">◆ Quest 01 — complete</div>Jun 2020 — Oct 2020</div>
-          <div>
-            <h3>Data Scientist (Intern) <span>@</span></h3>
-            <div class="co">DRDO — IRDE Labs</div>
-            <p class="desc">My first real taste of ML at scale — teaching neural networks to clear surveillance footage distorted by atmospheric turbulence.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <section class="hero wrap">
+    <p class="kicker">// live ops · analytics · swift · ble — los angeles, ca</p>
+    <h1>Rudra<span class="accent">.</span>Patel</h1>
+    <p class="tagline">
+      I run <b>Fortnite Discover</b> live operations at Epic Games — measuring what ships, what
+      holds players, and what changes next week. Nights and weekends:
+      <a href="https://github.com/Rudra5417/whoop5-protocol" target="_blank" rel="noopener">reverse-engineering the WHOOP 5.0 BLE protocol in Swift</a>.
+    </p>
+    <p class="meta">M.S. Applied Data Science (USC) · Epic Games → AWS → Easley-Dunn → DRDO</p>
   </section>
 
   <!-- ═══ WORK ═══ -->
-  <section class="section" id="work">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <h2>Selected work</h2>
-        <span class="kicker">measured, shipped, learned</span>
+  <section class="section wrap" id="work">
+    <div class="sec-head reveal">
+      <h2>Things I've built</h2>
+      <span class="idx">01 — 04</span>
+    </div>
+
+    <div class="work-row reveal">
+      <span class="no">01</span>
+      <div class="body">
+        <div class="t"><a href="https://github.com/Rudra5417/whoop5-protocol" target="_blank" rel="noopener">whoop5-protocol</a></div>
+        <div class="d">WHOOP 5.0 / MG BLE protocol in Swift — frame envelope, CRC16-Modbus/CRC32, live + historical record decoders, validated against a published hardware capture.</div>
       </div>
-      <div class="work-grid">
+      <span class="yr">2026</span>
+    </div>
 
-        <div class="card card-wide c1 reveal" style="--d:0s">
-          <div class="card-visual">
-            <span class="cv-label">Live case study — Fortnite Discover</span>
-            <span class="cv-num">01</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>Which Discover surfaces deserve the next launch? <span class="arrow">↓</span></h3>
-            <div class="meta">Epic Games · Fortnite Discover · <b>Ch6 MS2 → Ch7 S3</b></div>
-            <div class="case-list">
-              <div class="case-row"><b>Question</b><span>Which Discover surfaces were underperforming for returning players as the catalog grew?</span></div>
-              <div class="case-row"><b>Data</b><span>Surface impressions, click-through, and session-retention events in SQL over Databricks, watched through Grafana dashboards.</span></div>
-              <div class="case-row"><b>Finding</b><span>Players returned to a small set of trusted slots; two high-traffic surfaces lost most of their audience within seconds of entry.</span></div>
-              <div class="case-row"><b>Action</b><span>Re-weighted catalog programming every launch, moved highest-hold content into the underperforming slots, and turned the finding into a standing weekly surface-health review.</span></div>
-              <div class="case-row"><b>Result</b><span><em id="editCaseResult">4% lift in discovery session retention that season</em> — <em id="editCaseDef">EDIT: confirm the metric and definition you quote (impressions? CTR? playtime? retention?) before sharing.</em></span></div>
-            </div>
-            <div class="tags"><span class="tag">SQL</span><span class="tag">Databricks</span><span class="tag">Grafana</span><span class="tag">Experiments</span><span class="tag">Live ops</span></div>
-          </div>
-        </div>
-
-        <div class="card c2 reveal" style="--d:.08s">
-          <div class="card-visual">
-            <span class="cv-label">Island Analytics</span>
-            <span class="cv-num">02</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>Stormglass <span class="arrow">→</span></h3>
-            <div class="meta">Fortnite / UEFN · <b>2025</b></div>
-            <p>Surface health for UEFN island creators: session counts, visit depth, retention, and dwell by entry point — so a creator can see exactly where players drop off and which island to iterate on next. The same rigor I run on Discover, packaged for the creator community. Not affiliated with Epic Games.</p>
-            <div class="tags"><span class="tag">TypeScript</span><span class="tag">Fortnite / UEFN</span><span class="tag">Retention</span><span class="tag">Dashboards</span></div>
-          </div>
-        </div>
-
-        <div class="card c3 reveal" style="--d:.08s">
-          <div class="card-visual">
-            <span class="cv-label">Retention case</span>
-            <span class="cv-num">03</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>60% → 80% stickiness <span class="arrow">→</span></h3>
-            <div class="meta">Easley-Dunn Productions · <b>2024 — 2025</b></div>
-            <p>One experiment, one cohort split, one feature. I measured where the 5,000-player base stopped coming back, ran a cohort experiment on the highest-leverage mechanic, and shipped the winner — D30 retention moved from 60% to 80%.</p>
-            <div class="tags"><span class="tag">Experiments</span><span class="tag">Cohort analysis</span><span class="tag">Retention</span></div>
-          </div>
-        </div>
-
-        <a class="card c4 reveal" style="--d:.08s" href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">
-          <div class="card-visual">
-            <span class="cv-label">Natural Language → Code</span>
-            <span class="cv-num">04</span>
-            <i class="cv-f"></i>
-          </div>
-          <div class="card-body">
-            <h3>Code Generator — GPT-3 <span class="arrow">→</span></h3>
-            <div class="meta">LLM Pipeline · <b>14★</b></div>
-            <p>Plain-English instructions turned into working code with an early GPT-3 pipeline — the same instinct, applied before LLMs were mainstream.</p>
-            <div class="tags"><span class="tag">GPT-3</span><span class="tag">Python</span><span class="tag">Jupyter</span></div>
-          </div>
-        </a>
-
+    <div class="work-row reveal" style="--d:.05s">
+      <span class="no">02</span>
+      <div class="body">
+        <div class="t"><a href="https://github.com/Rudra5417/stormglass" target="_blank" rel="noopener">stormglass</a></div>
+        <div class="d">Surface health for UEFN / Fortnite Creative island creators — sessions, retention, dwell by entry point. The Discover rigor, packaged. Not affiliated with Epic.</div>
       </div>
+      <span class="yr">2025</span>
+    </div>
 
-      <details class="others reveal" style="--d:.2s">
-        <summary>Other builds →</summary>
-        <div class="other-row">
-          <a href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">DocBot — document Q&amp;A chatbot</a>
-          <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
-          <a href="https://github.com/Rudra5417" target="_blank" rel="noopener">Wattpath — grid-optimization scheduler (21% lower cost)</a>
-          <a href="https://github.com/Rudra5417/atmos-imaging-cnn" target="_blank" rel="noopener">atmos-imaging-cnn — turbulence removal at DRDO</a>
-        </div>
-      </details>
+    <details class="case work-row reveal" style="--d:.1s" open>
+      <summary>
+        <span class="no">03</span>
+        <span class="body"><span class="t">Fortnite Discover — surface health &amp; experiments</span>
+        <span class="d">Which surfaces deserve the next launch: impressions, click-through, session retention in SQL over Databricks, watched live in Grafana.</span></span>
+        <span class="marker">→</span>
+      </summary>
+      <div class="case-list">
+        <div class="case-row"><b>Question</b>Which Discover surfaces were underperforming for returning players as the catalog grew?</div>
+        <div class="case-row"><b>Data</b>Surface impressions, click-through, session-retention events · SQL on Databricks · Grafana dashboards.</div>
+        <div class="case-row"><b>Finding</b>Players returned to a small set of trusted slots; two high-traffic surfaces dropped most of their audience within seconds of entry.</div>
+        <div class="case-row"><b>Action</b>Re-weighted catalog programming each launch, moved highest-hold content into the weak slots, standing weekly surface-health review.</div>
+        <div class="case-row"><b>Result</b>4% lift in discovery session retention that season — EDIT: confirm the metric + definition before sharing (impressions? CTR? playtime? retention?).</div>
+      </div>
+    </details>
+
+    <div class="work-row reveal" style="--d:.15s">
+      <span class="no">04</span>
+      <div class="body">
+        <div class="t">D30 retention 60% → 80%</div>
+        <div class="d">Easley-Dunn: one experiment, one cohort split, one feature — measured where the 5,000-player base stopped returning, shipped the winner.</div>
+      </div>
+      <span class="yr">24—25</span>
+    </div>
+
+    <details class="others reveal" style="--d:.2s">
+      <summary>other builds</summary>
+      <div class="other-row">
+        <a href="https://github.com/Rudra5417/clarify" target="_blank" rel="noopener">clarify — PDF/image one-shot reader</a>
+        <a href="https://github.com/Rudra5417/Code-Generator-using-GPT-3" target="_blank" rel="noopener">Code-Generator-using-GPT-3 (14★)</a>
+        <a href="https://github.com/Rudra5417/DocBot-Advanced-Q-A-Chatbot-for-Document-Insights" target="_blank" rel="noopener">DocBot — document Q&amp;A</a>
+        <!-- EDIT: Wattpath has no public repo yet — swap this href when it's live -->
+        <a href="https://github.com/Rudra5417" target="_blank" rel="noopener">Wattpath — grid-optimization scheduler</a>
+        <a href="https://github.com/Rudra5417/atmos-imaging-cnn" target="_blank" rel="noopener">atmos-imaging-cnn — turbulence removal</a>
+      </div>
+    </details>
+  </section>
+
+  <!-- ═══ EXPERIENCE ═══ -->
+  <section class="section wrap" id="experience">
+    <div class="sec-head reveal">
+      <h2>Experience</h2>
+      <span class="idx">doer — 2020 → now</span>
+    </div>
+
+    <div class="xp-row reveal">
+      <div class="when">Aug 2025 — now<br>Los Angeles</div>
+      <div class="what">
+        <h3>Discover Operations Manager</h3>
+        <div class="co">Epic Games · Fortnite</div>
+        <div class="ch">Ch6 MS2 Simpsons → Ch7 S1 Pacific Break → Ch7 S2 Showdown → Ch7 S3 Runners</div>
+        <p class="desc">Own the live health of Fortnite Discover end to end — validation to surface, season after season. Dashboards and alerting that find problems in minutes, experiments that decide what holds players, fed straight back into what launches next.</p>
+      </div>
+    </div>
+
+    <div class="xp-row reveal" style="--d:.05s">
+      <div class="when">Feb 2025 — Jul 2025<br>Seattle</div>
+      <div class="what">
+        <h3>Senior Business Analyst</h3>
+        <div class="co">Amazon Web Services</div>
+        <p class="desc">Spec'd an internal marketing-data portal from stakeholder interviews — teams asked for it before it shipped. Built to answer one question at a time: which campaigns pulled spend, which pipeline lagged, what the next quarter should bet on.</p>
+      </div>
+    </div>
+
+    <div class="xp-row reveal" style="--d:.1s">
+      <div class="when">Oct 2024 — Feb 2025</div>
+      <div class="what">
+        <h3>Software Engineer, Game Analytics</h3>
+        <div class="co">Easley-Dunn Productions</div>
+        <p class="desc">The analytics backbone for a small studio — morning dashboards, and a quiet retention push: one experiment, one cohort split, one feature, taking the 5,000-player base from 60% to 80% stickiness.</p>
+      </div>
+    </div>
+
+    <div class="xp-row reveal" style="--d:.15s">
+      <div class="when">Jun 2020 — Oct 2020</div>
+      <div class="what">
+        <h3>Data Scientist (Intern)</h3>
+        <div class="co">DRDO · IRDE Labs</div>
+        <p class="desc">ML at scale before the word was everywhere — CNN reconstruction of 3.5M+ images distorted by atmospheric turbulence.</p>
+      </div>
     </div>
   </section>
 
   <!-- ═══ SKILLS ═══ -->
-  <section class="section" id="skills">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <h2>Skills & tools</h2>
-        <span class="kicker">perks</span>
-      </div>
-      <div class="skill-grid reveal" style="--d:.05s">
-        <div class="skill-group" style="--d:0s">
-          <h3>Experimentation &amp; measurement</h3>
-          <div class="tags">
-            <span class="tag">A/B testing</span><span class="tag">Statsig</span><span class="tag">Experiment design</span>
-            <span class="tag">Retention analysis</span><span class="tag">Funnel &amp; surface health</span><span class="tag">Cohort analysis</span>
-          </div>
-        </div>
-        <div class="skill-group" style="--d:.07s">
-          <h3>Data stack</h3>
-          <div class="tags">
-            <span class="tag">SQL</span><span class="tag">Databricks</span><span class="tag">BigQuery</span><span class="tag">OpenSearch</span>
-            <span class="tag">Redshift</span><span class="tag">Airflow</span><span class="tag">Firebase</span>
-            <span class="tag">Grafana</span><span class="tag">Looker Studio</span><span class="tag">QuickSight</span><span class="tag">Tableau</span>
-          </div>
-        </div>
-        <div class="skill-group" style="--d:.14s">
-          <h3>Live ops</h3>
-          <div class="tags">
-            <span class="tag">Release management</span><span class="tag">Content programming</span><span class="tag">Stakeholder management</span>
-          </div>
-        </div>
-        <div class="skill-group" style="--d:.21s">
-          <h3>Also</h3>
-          <div class="tags">
-            <span class="tag">Python</span><span class="tag">TensorFlow</span><span class="tag">OpenCV</span><span class="tag">MongoDB</span>
-            <span class="tag">FastAPI</span><span class="tag">Jupyter</span><span class="tag">Unity SDK</span><span class="tag">Unreal Services</span>
-            <span class="tag">JIRA</span><span class="tag">Confluence</span><span class="tag">Git / GitHub</span><span class="tag">Claude AI</span>
-          </div>
-        </div>
-      </div>
+  <section class="section wrap" id="skills">
+    <div class="sec-head reveal">
+      <h2>Stack</h2>
+      <span class="idx">what I reach for</span>
+    </div>
+    <div class="line reveal">
+      <span class="lab">analytics</span>
+      <span class="v">SQL · Databricks · BigQuery · Grafana · OpenSearch · Tableau · Looker Studio · Airflow</span>
+    </div>
+    <div class="line reveal" style="--d:.05s">
+      <span class="lab">experimentation</span>
+      <span class="v">A/B testing · Statsig · experiment design · retention &amp; cohort analysis · funnel / surface health</span>
+    </div>
+    <div class="line reveal" style="--d:.1s">
+      <span class="lab">live ops</span>
+      <span class="v">release management · content programming · stakeholder management · on-call-for-a-live-game calm</span>
+    </div>
+    <div class="line reveal" style="--d:.15s">
+      <span class="lab">also</span>
+      <span class="v">Swift · Python · TypeScript · TensorFlow · FastAPI · Unity/UEFN SDK · Jupyter · Git</span>
     </div>
   </section>
 
   <!-- ═══ CONTACT ═══ -->
-  <section class="section contact" id="contact">
-    <div class="wrap">
-      <div class="reveal">
-        <h2>Let's make the next season <em>the record one.</em></h2>
-        <a class="mail" href="mailto:rudrapatel.data@gmail.com">rudrapatel.data@gmail.com</a>
-        <div class="base">Los Angeles, CA · open to remote &amp; hybrid</div>
-        <div class="socials">
-          <a href="https://github.com/Rudra5417" target="_blank" rel="me noopener">GitHub</a>
-          <a href="https://www.linkedin.com/in/rudra-patel-64b7b5169/" target="_blank" rel="me noopener">LinkedIn</a>
-          <a href="assets/resume.pdf" target="_blank" rel="noopener">Resume ↗</a>
-        </div>
+  <section class="section wrap" id="contact">
+    <div class="sec-head reveal">
+      <h2>Contact</h2>
+      <span class="idx">open to good problems</span>
+    </div>
+    <div class="reveal">
+      <a class="mail" href="mailto:rudrapatel.data@gmail.com">rudrapatel.data@gmail.com</a>
+      <div class="socials">
+        <a href="https://github.com/Rudra5417" target="_blank" rel="me noopener">github</a>
+        <a href="https://www.linkedin.com/in/rudra-patel-64b7b5169/" target="_blank" rel="me noopener">linkedin</a>
+        <a href="assets/resume.pdf" target="_blank" rel="noopener">resume.pdf</a>
       </div>
+      <div class="base">Los Angeles, CA · remote &amp; hybrid · on GMT-7, wake me for launches</div>
     </div>
   </section>
 
 </main>
 
-<!-- season key-art lightbox -->
-<div id="seasonLightbox" role="dialog" aria-label="Season key art">
-  <span class="lb-close">esc ✕</span>
-  <img src="" alt="">
-  <div class="lb-cap"></div>
-</div>
-
 <footer>
-  <div class="wrap foot">
-    <div class="foot-l">
-      <p>© 2026 Rudra Patel · Los Angeles, CA · GG — thanks for playing</p>
-      <p class="hint">psst · ↑ ↑ ↓ ↓ ← → ← → B A</p>
-    </div>
-    <a class="top" href="#top">Back to top ↑</a>
+  <div class="wrap">
+    <span>© 2026 Rudra Patel · gg — thanks for playing</span>
+    <a class="top" href="#top">↑ top</a>
   </div>
 </footer>
+
+<div id="sys" aria-live="polite">[ SYSTEM OVERRIDE — clearance granted ]</div>
 
 <script>
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── scroll progress ──
-  const bar = document.getElementById('progress');
-  addEventListener('scroll', () => {
-    const h = document.documentElement;
-    bar.style.width = ((h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100) + '%';
-  }, { passive: true });
-
-  // ── reveal on scroll (with stagger via --d) ──
+  // ── reveal on scroll ──
   const hiddenCtx = document.visibilityState === 'hidden';
   const revealEls = document.querySelectorAll('.reveal');
   const revealAll = () => revealEls.forEach((el) => el.classList.add('in'));
-
-  if (typeof IntersectionObserver === 'undefined' || hiddenCtx) {
+  if (typeof IntersectionObserver === 'undefined' || hiddenCtx || prefersReduced) {
     revealAll();
   } else {
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
       }
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
     for (const el of revealEls) io.observe(el);
     revealEls.forEach((el) => {
       const r = el.getBoundingClientRect();
@@ -973,345 +394,34 @@
     });
   }
 
-  // ── active nav link ──
+  // ── nav spy ──
   if (typeof IntersectionObserver !== 'undefined') {
-    const navLinks = document.querySelectorAll('.nav-links a');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
     const spy = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) {
           for (const l of navLinks) l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id);
         }
       }
-    }, { rootMargin: '-40% 0px -55% 0px' });
+    }, { rootMargin: '-35% 0px -55% 0px' });
     for (const s of document.querySelectorAll('main section[id]')) spy.observe(s);
   }
 
-  // ── count-up stats (with instant fallback for hidden contexts) ──
-  const finish = (el) => {
-    const target = parseFloat(el.dataset.count);
-    if (hiddenCtx || prefersReduced) { el.textContent = target; return; }
-    const t0 = performance.now(), dur = 1300;
-    const tick = (t) => {
-      const p = Math.min(1, (t - t0) / dur);
-      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  };
-  const statsWrap = document.querySelector('.stats');
-  const counters = document.querySelectorAll('.count');
-  if (hiddenCtx || typeof IntersectionObserver === 'undefined') {
-    counters.forEach(finish);
-  } else {
-    const cio = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) { counters.forEach(finish); cio.disconnect(); }
-      }
-    }, { threshold: 0.4 });
-    if (statsWrap) cio.observe(statsWrap);
-  }
-
-  // ── cursor glow ──
-  const glow = document.getElementById('glow');
-  if (glow && !prefersReduced && !matchMedia('(pointer: coarse)').matches) {
-    let tx = innerWidth / 2, ty = innerHeight / 2, cx = tx, cy = ty, raf = null;
-    const loop = () => {
-      cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
-      glow.style.transform = `translate3d(${cx - 230}px, ${cy - 230}px, 0)`;
-      if (Math.abs(tx - cx) + Math.abs(ty - cy) > 0.4) { raf = requestAnimationFrame(loop); } else { raf = null; }
-    };
-    addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; if (!raf) loop(); }, { passive: true });
-  }
-
-
-  // ── season key-art lightbox ──
-  const seasonStrip = document.getElementById('seasonStrip');
-  const seasonBox = document.getElementById('seasonLightbox');
-  if (seasonStrip && seasonBox) {
-    const lbImg = seasonBox.querySelector('img');
-    const lbCap = seasonBox.querySelector('.lb-cap');
-    const closeLb = function () {
-      seasonBox.classList.remove('open');
-      document.body.style.overflow = '';
-    };
-    seasonStrip.addEventListener('click', function (e) {
-      const card = e.target.closest('.scard');
-      if (!card) return;
-      e.preventDefault();
-      lbImg.src = card.getAttribute('data-full');
-      lbImg.alt = card.querySelector('.sc-meta b').textContent + ' — ' + card.querySelector('.sc-meta span').textContent;
-      lbCap.textContent = card.querySelector('.sc-meta b').textContent + ' · ' + card.querySelector('.sc-meta span').textContent;
-      seasonBox.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
-    seasonBox.addEventListener('click', function (e) {
-      if (e.target === seasonBox || e.target.classList.contains('lb-close')) closeLb();
-    });
-    addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLb(); });
-  }
-</script>
-
-<script>
-(function () {
-  'use strict';
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hiddenCtx = document.visibilityState === 'hidden';
-
-  /* ── 1) matchmaking boot (first visit only) ── */
-  const boot = document.getElementById('boot');
-  let seen = false;
-  try { seen = localStorage.getItem('rp_boot') === '1'; } catch (e) {}
-  if (boot && !seen && !reduce && !hiddenCtx) {
-    const lines = ['MAP: PORTFOLIO', 'SKIN: OPERATOR', 'FOUND: VISITOR', 'SEASON 7.3 — RUNNERS'];
-    const lbl = boot.querySelector('.boot-line');
-    const bar = boot.querySelector('.boot-bar span');
-    const pct = boot.querySelector('.boot-pct');
-    const tb = performance.now();
-    let i = 0, doneB = false;
-    const lblInt = setInterval(() => { i += 1; if (lbl) lbl.textContent = lines[i % lines.length]; }, 340);
-    const pctInt = setInterval(() => {
-      const p = Math.min(1, (performance.now() - tb) / 1500);
-      if (pct) pct.textContent = Math.round(p * 100) + '%';
-      if (p >= 1) clearInterval(pctInt);
-    }, 70);
-    document.body.classList.add('bars-in');
-    const finish = () => {
-      if (doneB) return; doneB = true; clearInterval(lblInt); clearInterval(pctInt);
-      boot.classList.add('done');
-      document.body.classList.remove('bars-in');
-      document.body.classList.add('bars-up');
-      setTimeout(() => {
-        try { localStorage.setItem('rp_boot', '1'); } catch (e) {}
-        boot.remove();
-      }, 550);
-      setTimeout(() => {
-        const t = document.getElementById('cbTop'), b = document.getElementById('cbBottom');
-        if (t) t.remove(); if (b) b.remove();
-      }, 1200);
-    };
-    requestAnimationFrame(() => {
-      bar.style.transition = 'width 1.5s cubic-bezier(.22,.61,.36,1)';
-      bar.style.width = '100%';
-    });
-    setTimeout(finish, 1750);
-    boot.addEventListener('click', finish);
-    addEventListener('keydown', finish, { once: true });
-  } else if (boot) { boot.remove(); }
-
-  /* ── 2) typewriter role line ── */
-  const tw = document.getElementById('type');
-  if (tw) {
-    const roles = ['Live Ops & Analytics · Fortnite Discover', "I turn player data into product decisions", 'Experimentation · retention · live games', 'M.S. Applied Data Science, USC'];
-    if (!reduce && !hiddenCtx) {
-      let ri = 0, ci = 0, del = false;
-      const tick = () => {
-        const r = roles[ri];
-        if (!del) {
-          ci += 1; tw.textContent = r.slice(0, ci);
-          if (ci === r.length) { del = true; setTimeout(tick, 1600); return; }
-          setTimeout(tick, 42);
-        } else {
-          ci -= 1; tw.textContent = r.slice(0, ci);
-          if (ci === 0) { del = false; ri = (ri + 1) % roles.length; setTimeout(tick, 380); return; }
-          setTimeout(tick, 22);
-        }
-      };
-      setTimeout(tick, 1200);
-    } else { tw.textContent = roles[0]; }
-  }
-
-  /* ── 3) Konami → SYSTEM OVERRIDE ── */
-  const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-  let pos = 0, vicT = 0;
+  // ── konami easter egg ──
+  const seq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let pos = 0;
+  const sysEl = document.getElementById('sys');
+  let sysT = null;
   addEventListener('keydown', (e) => {
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     pos = (k === seq[pos]) ? pos + 1 : (k === seq[0] ? 1 : 0);
     if (pos === seq.length) {
       pos = 0;
-      document.body.classList.add('victory');
-      if (window.__fxVictory) window.__fxVictory();
-      clearTimeout(vicT);
-      vicT = setTimeout(() => document.body.classList.remove('victory'), 4200);
+      sysEl.classList.add('on');
+      clearTimeout(sysT);
+      sysT = setTimeout(() => sysEl.classList.remove('on'), 2200);
     }
   });
-
-  /* ── 4) fx canvas: click bursts + victory confetti ── */
-  const fx = document.getElementById('fx-canvas');
-  if (fx && !reduce) {
-    const cfx = fx.getContext('2d');
-    const FDPR = Math.min(devicePixelRatio || 1, 2);
-    let W = 0, H = 0;
-    const resizeFx = () => { W = innerWidth; H = innerHeight; fx.width = W * FDPR; fx.height = H * FDPR; cfx.setTransform(FDPR, 0, 0, FDPR, 0, 0); };
-    resizeFx(); addEventListener('resize', resizeFx, { passive: true });
-    let parts = [];
-    const push = (p) => { if (parts.length < 420) parts.push(p); };
-    const burst = (x, y, n, spread) => {
-      for (let i = 0; i < n; i++) {
-        const a = Math.random() * 6.283, sp = (0.6 + Math.random() * 1.6) * spread;
-        push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1.2, w: 3 + Math.random() * 4, h: 2 + Math.random() * 3, rot: Math.random() * 6.283, vr: (Math.random() - .5) * .3, life: 1, decay: .012 + Math.random() * .014, hue: Math.random() < .55 ? '45,212,247' : '139,92,246' });
-      }
-    };
-    addEventListener('pointerdown', (e) => burst(e.clientX, e.clientY, 9, 2.4), { passive: true });
-    window.__fxVictory = () => {
-      const hues = ['45,212,247', '139,92,246', '238,242,248', '74,222,128'];
-      for (let i = 0; i < 150; i++) {
-        push({ x: Math.random() * W, y: -20 - Math.random() * H * .4, vx: (Math.random() - .5) * 2.6, vy: 1.4 + Math.random() * 2.8, w: 5 + Math.random() * 7, h: 7 + Math.random() * 9, rot: Math.random() * 6.283, vr: (Math.random() - .5) * .5, life: 3 + Math.random() * 1.8, decay: .0007, hue: hues[i % 4] });
-      }
-    };
-    const fxLoop = () => {
-      if (document.hidden) return;
-      requestAnimationFrame(fxLoop);
-      cfx.clearRect(0, 0, W, H);
-      parts = parts.filter((p) => p.life > 0 && p.y < H + 40);
-      for (const p of parts) {
-        p.x += p.vx; p.y += p.vy; p.vy += .05; p.rot += p.vr; p.life -= p.decay;
-        cfx.save(); cfx.translate(p.x, p.y); cfx.rotate(p.rot);
-        cfx.globalAlpha = Math.max(0, Math.min(1, p.life));
-        cfx.fillStyle = 'rgb(' + p.hue + ')'; cfx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-        cfx.restore();
-      }
-    };
-    requestAnimationFrame(fxLoop);
-  }
-
-})();
 </script>
-
-
-<script>
-(function () {
-  'use strict';
-  // ── black-paper ink sketch: constellations, doodles, hatch — drawn, not rendered ──
-  (function inkPaper() {
-    var S = 640, cv = document.createElement('canvas');
-    cv.width = cv.height = S;
-    var g = cv.getContext('2d');
-    g.fillStyle = '#08080c';
-    g.fillRect(0, 0, S, S);
-    // paper grain — faint mottling
-    for (var i = 0; i < 900; i++) {
-      g.fillStyle = 'rgba(255,255,255,' + (Math.random() * 0.025).toFixed(3) + ')';
-      g.fillRect(Math.random() * S, Math.random() * S, 1.1, 1.1);
-    }
-    function ink(a) { return 'rgba(226,232,240,' + a.toFixed(3) + ')'; }
-    function line(pts, w, a) {
-      g.strokeStyle = ink(a);
-      g.lineWidth = w;
-      g.lineCap = 'round';
-      g.lineJoin = 'round';
-      g.beginPath();
-      g.moveTo(pts[0][0], pts[0][1]);
-      for (var i = 1; i < pts.length; i++) {
-        var mx = (pts[i - 1][0] + pts[i][0]) / 2 + (Math.random() - 0.5) * 7;
-        var my = (pts[i - 1][1] + pts[i][1]) / 2 + (Math.random() - 0.5) * 7;
-        g.quadraticCurveTo(mx, my, pts[i][0], pts[i][1]);
-      }
-      g.stroke();
-    }
-    function dot(x, y, r, a) {
-      g.fillStyle = ink(a);
-      g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
-    }
-    // constellations — kept clear of the tile edges so it tiles seamlessly
-    for (var c = 0; c < 5; c++) {
-      var cx = 70 + Math.random() * (S - 140), cy = 70 + Math.random() * (S - 140);
-      var pts = [[cx, cy]];
-      var n = 3 + Math.floor(Math.random() * 3);
-      for (var k = 0; k < n; k++) {
-        pts.push([cx + (Math.random() - 0.5) * 180, cy + (Math.random() - 0.5) * 130]);
-      }
-      line(pts, 0.8, 0.10 + Math.random() * 0.06);
-      for (var p = 0; p < pts.length; p++) dot(pts[p][0], pts[p][1], 1 + Math.random() * 1.2, 0.15 + Math.random() * 0.12);
-    }
-    // contour doodles — wobbly closed loops
-    for (var d = 0; d < 4; d++) {
-      var ox = 70 + Math.random() * (S - 140), oy = 70 + Math.random() * (S - 140);
-      var R = 14 + Math.random() * 62;
-      var pts2 = [];
-      for (var a2 = 0; a2 <= 6.4; a2 += 0.35) {
-        pts2.push([ox + Math.cos(a2) * R * (1 + (Math.random() - 0.5) * 0.3), oy + Math.sin(a2) * R * (1 + (Math.random() - 0.5) * 0.3)]);
-      }
-      line(pts2, 0.7, 0.05 + Math.random() * 0.05);
-    }
-    // scattered hatch ticks
-    for (var h = 0; h < 24; h++) {
-      var hx = 40 + Math.random() * (S - 80), hy = 40 + Math.random() * (S - 80);
-      line([[hx, hy], [hx + (Math.random() - 0.5) * 16, hy + (Math.random() - 0.5) * 16]], 0.6, 0.04);
-    }
-    document.body.style.backgroundImage = 'url(' + cv.toDataURL('image/png') + ')';
-    document.body.style.backgroundSize = '640px 640px';
-    document.body.style.backgroundAttachment = 'fixed';
-  })();
-
-  // ── hero: a few larger hand-drawn constellations with softly twinkling nodes ──
-  var hero = document.querySelector('.hero');
-  var cv2 = document.getElementById('hero-canvas');
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var hidden = document.visibilityState === 'hidden';
-  if (hero && cv2) {
-    var ctx = cv2.getContext('2d');
-    var DPR = Math.min(window.devicePixelRatio || 1, 2);
-    var W = 0, H = 0, frameN = 0;
-    function resize() {
-      var r = hero.getBoundingClientRect();
-      W = Math.max(2, r.width); H = Math.max(2, r.height);
-      cv2.width = Math.round(W * DPR); cv2.height = Math.round(H * DPR);
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    }
-    resize();
-    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
-    function mkConstellation() {
-      var cx = 0.12 + Math.random() * 0.62, cy = 0.1 + Math.random() * 0.62;
-      var pts = [[cx, cy]];
-      var n = 3 + Math.floor(Math.random() * 4);
-      for (var k = 0; k < n; k++) {
-        var px = Math.min(0.92, Math.max(0.08, cx + (Math.random() - 0.5) * 0.5));
-        var py = Math.min(0.9, Math.max(0.06, cy + (Math.random() - 0.5) * 0.36));
-        pts.push([px, py]);
-      }
-      return pts;
-    }
-    var consts = [];
-    for (var ci = 0; ci < 4; ci++) consts.push(mkConstellation());
-    var nodes = [];
-    for (var cc = 0; cc < consts.length; cc++) {
-      for (var nn = 0; nn < consts[cc].length; nn++) {
-        nodes.push({ x: consts[cc][nn][0], y: consts[cc][nn][1], ph: Math.random() * 6.283, sp: 0.4 + Math.random() * 0.8 });
-      }
-    }
-    function frame(t) {
-      ctx.clearRect(0, 0, W, H);
-      var el = t / 1000;
-      ctx.strokeStyle = 'rgba(226,232,240,0.16)';
-      ctx.lineWidth = 1.2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      for (var i = 0; i < consts.length; i++) {
-        var pts = consts[i];
-        ctx.beginPath();
-        ctx.moveTo(pts[0][0] * W, pts[0][1] * H);
-        for (var k = 1; k < pts.length; k++) {
-          var mx = (pts[k - 1][0] + pts[k][0]) / 2 * W + (Math.random() - 0.5) * 5;
-          var my = (pts[k - 1][1] + pts[k][1]) / 2 * H + (Math.random() - 0.5) * 3;
-          ctx.quadraticCurveTo(mx, my, pts[k][0] * W, pts[k][1] * H);
-        }
-        ctx.stroke();
-      }
-      for (var nd = 0; nd < nodes.length; nd++) {
-        var s = nodes[nd];
-        var a = 0.22 + 0.18 * Math.sin(el * s.sp + s.ph);
-        ctx.fillStyle = 'rgba(210,224,255,' + (Math.max(0.08, a)).toFixed(3) + ')';
-        ctx.beginPath(); ctx.arc(s.x * W, s.y * H, 1.6, 0, 6.283); ctx.fill();
-      }
-      frameN = (frameN + 1) % 1000000;
-      var hud = document.getElementById('hudFrame');
-      if (hud) hud.textContent = 'F·' + ('00000' + frameN).slice(-6);
-      if (!document.hidden && !reduce) requestAnimationFrame(frame);
-    }
-    if (!reduce && !hidden) requestAnimationFrame(frame);
-  }
-})();
-</script>
-
 </body>
 </html>

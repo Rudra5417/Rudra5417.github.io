@@ -14,9 +14,9 @@ git add index.html && git commit -m "update" && git push
 
 GitHub Pages redeploys automatically in about a minute.
 
-## Cosmos background
+## Design
 
-The site sits on a black-paper ink-sketch background — a generated tile of hand-jittered constellations, contour doodles and hatch ticks repeats across the page (fixed while you scroll), with larger hand-drawn constellations and softly twinkling nodes in the hero. One file, zero dependencies, works offline.
+Mono-lab minimal: one JetBrains Mono typeface, near-black background, numbered work rows, hairline dividers. One file, zero dependencies, works offline. Konami easter egg: ↑↑↓↓←→←→BA.
 
 ## Colophon
 
