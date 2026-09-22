@@ -2,24 +2,27 @@
 
 Live at **[https://rudra5417.github.io](https://rudra5417.github.io)**
 
-Single-file static site — no frameworks, no build step. Content from my resume and GitHub: live operations at Epic Games (Fortnite Discover), data science (M.S., USC), and game analytics engineering.
+Monochrome-build minimal, one JetBrains Mono typeface, one file. Whoop, Stormglass, clarify —
+the side builds do the talking; the day job fills in the details.
 
-## Edit
+## Ship it
 
-Everything lives in `index.html` (search `EDIT` for the few placeholders — LinkedIn URL, Wattpath repo link). Open it, change it, push to `main`:
+Everything lives in `index.html` — open it, change it, push:
 
 ```bash
 git add index.html && git commit -m "update" && git push
 ```
 
-GitHub Pages redeploys automatically in about a minute.
+GitHub Pages redeploys automatically in about a minute. No build step, no frameworks, ~19 KB.
 
 ## Design
 
-Mono-lab minimal: one JetBrains Mono typeface, near-black background, numbered work rows, hairline dividers. One file, zero dependencies, works offline. Konami easter egg: ↑↑↓↓←→←→BA.
+- Mono-lab minimal: near-black `#0b0b0c`, hairline dividers, numbered work rows, one cyan accent
+- Experience → builds → stack → contact; builds are side projects only (the day job stays in Experience)
+- Share cards: OG/Twitter meta + generated `assets/og-card.png` (1200×630)
+- Konami easter egg: `↑ ↑ ↓ ↓ ← → ← → B A`
+- Respects `prefers-reduced-motion`; works offline (fonts are the only network fetch, with graceful fallbacks)
 
-## Colophon
+## Edit markers
 
-- Dark, animated, single-page design — vanilla HTML / CSS / JS
-- Type: Space Grotesk, Inter, JetBrains Mono (Google Fonts)
-- Respects `prefers-reduced-motion` and touch devices
+Search `EDIT` in `index.html` — remaining placeholder: Wattpath repo link (no public repo yet).
