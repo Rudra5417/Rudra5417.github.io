@@ -23,18 +23,18 @@
 <meta name="twitter:title" content="Rudra Patel — Live Ops & Data · Fortnite Discover">
 <meta name="twitter:description" content="Fortnite Discover live ops + side builds: WHOOP 5.0 BLE protocol, Stormglass, clarify.">
 <meta name="twitter:image" content="https://rudra5417.github.io/assets/og-card.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2316130d'/><text y='.9em' x='6' font-size='80' fill='%23e8e1cf'>R</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f3f2ec'/><text y='.9em' x='6' font-size='80' fill='%23313130'>R</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:      #2a2318;
-    --paper:   #e8e1cf;
-    --muted:   rgba(232,225,207,.78);
-    --faint:   rgba(232,225,207,.55);
-    --faint-2: rgba(232,225,207,.38);
-    --border:  rgba(232,225,207,.24);
+    --bg:      #f3f2ec;
+    --paper:   #313130;
+    --muted:   rgba(49,49,48,.68);
+    --faint:   rgba(49,49,48,.46);
+    --faint-2: rgba(49,49,48,.3);
+    --border:  rgba(49,49,48,.16);
     --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     --caps: 'Cinzel', var(--serif);
@@ -48,7 +48,7 @@
     background: var(--bg);
     color: var(--paper);
     font-family: var(--serif);
-    font-size: 16px;
+    font-size: 17.5px;
     line-height: 1.75;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -61,8 +61,8 @@
 
   ::-webkit-scrollbar { width: 10px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: rgba(232,225,207,.32); border-radius: 8px; border: 2px solid var(--bg); }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(232,225,207,.3); }
+  ::-webkit-scrollbar-thumb { background: rgba(49,49,48,.3); border-radius: 8px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(49,49,48,.42); }
 
   /* ── nav ── */
   header { border-bottom: 1px solid var(--border); }
@@ -70,7 +70,7 @@
   .brand { font-family: var(--caps); font-size: 13.5px; letter-spacing: .12em; color: var(--paper); }
   .brand span { color: var(--faint); }
   nav { display: flex; gap: 1.5rem; align-items: center; }
-  nav a { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .06em; transition: color .15s var(--ease); }
+  nav a { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: .06em; transition: color .15s var(--ease); }
   nav a:hover, nav a.active { color: var(--paper); }
   nav a.active { color: var(--paper); border-bottom: 1px solid var(--faint); padding-bottom: 2px; }
 
@@ -79,12 +79,12 @@
   .hero::before {
     content: ""; position: absolute; top: -18%; left: 50%; transform: translateX(-50%);
     width: min(920px, 100vw); height: 560px; pointer-events: none;
-    background: radial-gradient(60% 55% at 50% 38%, rgba(232,225,207,.075), transparent 70%);
+    background: radial-gradient(60% 55% at 50% 38%, rgba(49,49,48,.05), transparent 70%);
   }
   .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
   h1 {
     font-family: var(--serif);
-    font-size: clamp(3rem, 8.5vw, 5.2rem);
+    font-size: clamp(3.5rem, 9vw, 6rem);
     font-weight: 500;
     letter-spacing: -.015em;
     line-height: 1.02;
@@ -92,7 +92,7 @@
     font-variant-ligatures: none;
   }
   h1 .l { color: var(--faint); }
-  .tagline { color: var(--muted); max-width: 58ch; font-size: 17.5px; line-height: 1.68; }
+  .tagline { color: var(--muted); max-width: 58ch; font-size: 19.5px; line-height: 1.66; }
   .tagline b { color: var(--paper); font-weight: 500; }
   .tagline a { color: var(--paper); border-bottom: 1px solid var(--faint-2); }
   .tagline a:hover { border-bottom-color: var(--paper); }
@@ -104,7 +104,7 @@
     display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
     margin-bottom: 1.7rem;
   }
-  .sec-head h2 { font-family: var(--caps); font-size: 12.5px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: var(--paper); }
+  .sec-head h2 { font-family: var(--caps); font-size: 13.5px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: var(--paper); }
   .sec-head .idx { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: .14em; text-transform: uppercase; }
 
   /* ── work rows ── */
@@ -116,18 +116,18 @@
     position: relative;
   }
   .work-row:nth-last-of-type(1) { border-bottom: 1px solid var(--border); }
-  .work-row:hover { background: rgba(232,225,207,.08); }
+  .work-row:hover { background: rgba(49,49,48,.05); }
   .work-row .no { font-family: var(--mono); font-size: 12px; color: var(--faint); flex: 0 0 36px; }
   .work-row .body { flex: 1; min-width: 0; }
-  .work-row .body .t { font-weight: 500; font-size: 19px; font-family: var(--serif); letter-spacing: -.005em; }
+  .work-row .body .t { font-weight: 500; font-size: 21px; font-family: var(--serif); letter-spacing: -.005em; }
   .work-row .body .t a { border-bottom: 1px solid transparent; }
   .work-row .body .t a:hover { color: var(--paper); border-bottom-color: var(--faint); }
-  .work-row .body .d { color: var(--muted); font-size: 14px; margin-top: .2rem; line-height: 1.65; max-width: 66ch; }
+  .work-row .body .d { color: var(--muted); font-size: 15.5px; margin-top: .25rem; line-height: 1.66; max-width: 66ch; }
   .work-row .body .d b { color: var(--paper); font-weight: 500; }
   .work-row .body .d a { color: var(--paper); border-bottom: 1px solid var(--faint-2); }
   .work-row .body .d a:hover { border-bottom-color: var(--paper); }
   .snip { margin-top: .6rem; font-family: var(--mono); font-size: 11px; line-height: 1.7; color: var(--faint); border-left: 1px solid var(--faint); padding-left: .9rem; letter-spacing: .02em; white-space: pre-line; }
-  .work-row .yr { font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+  .work-row .yr { font-family: var(--mono); font-size: 12.5px; color: var(--faint); white-space: nowrap; }
 
   /* other builds */
   details.others { margin-top: 1.4rem; }
@@ -149,20 +149,14 @@
   }
   .xp-row:last-of-type { border-bottom: 1px solid var(--border); }
   .xp-row .when { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); padding-top: .3rem; line-height: 1.8; }
-  .xp-row .what h3 { font-size: 18px; font-weight: 500; letter-spacing: -.005em; }
+  .xp-row .what h3 { font-size: 20px; font-weight: 500; letter-spacing: -.005em; }
   .xp-row .what .co { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: .15rem; letter-spacing: .08em; text-transform: uppercase; }
   .xp-row .what .ch { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: .35rem; letter-spacing: .05em; }
-  .xp-row .what .desc { color: var(--muted); font-size: 14px; margin-top: .5rem; max-width: 64ch; line-height: 1.68; }
+  .xp-row .what .desc { color: var(--muted); font-size: 15.5px; margin-top: .5rem; max-width: 64ch; line-height: 1.66; }
   .xp-row .what .desc b { color: var(--paper); font-weight: 500; }
 
-  /* ── skills ── */
-  .line { padding: .6rem .4rem; }
-  .line .lab { font-family: var(--caps); font-size: 11px; font-weight: 600; letter-spacing: .28em; text-transform: uppercase; color: var(--faint); display: block; margin-bottom: .4rem; }
-  .line .v { color: var(--muted); font-size: 14.5px; }
-  .line .v b { color: var(--paper); font-weight: 500; }
-
   /* ── contact ── */
-  .mail { display: block; font-size: clamp(1.45rem, 3.6vw, 2rem); font-weight: 500; letter-spacing: -.01em; margin: .3rem 0 1rem; font-family: var(--serif); }
+  .mail { display: block; font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 500; letter-spacing: -.01em; margin: .3rem 0 1rem; font-family: var(--serif); }
   .mail:hover { color: var(--paper); border-bottom: 1px solid var(--faint); display: inline-block; }
   .socials { display: flex; flex-wrap: wrap; gap: 1.5rem; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: var(--muted); }
   .socials a { border-bottom: 1px solid var(--faint-2); }
@@ -179,7 +173,7 @@
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
     font-family: var(--mono); font-size: 11.5px; letter-spacing: .18em; color: var(--paper);
     opacity: 0; transition: opacity .6s var(--ease); pointer-events: none;
-    text-shadow: 0 0 16px rgba(232,225,207,.4); z-index: 99;
+    text-shadow: 0 0 16px rgba(49,49,48,.35); z-index: 99;
   }
   #sys.on { opacity: 1; }
 
@@ -209,7 +203,6 @@
     <nav>
       <a href="#experience">experience</a>
       <a href="#work">work</a>
-      <a href="#skills">skills</a>
       <a href="assets/resume.pdf" target="_blank" rel="noopener">resume</a>
     </nav>
   </div>
@@ -319,30 +312,6 @@
         <a href="https://github.com/Rudra5417/atmos-imaging-cnn" target="_blank" rel="noopener">atmos-imaging-cnn — turbulence removal</a>
       </div>
     </details>
-  </section>
-
-  <!-- ═══ SKILLS ═══ -->
-  <section class="section wrap" id="skills">
-    <div class="sec-head reveal">
-      <h2>Stack</h2>
-      <span class="idx">what I reach for</span>
-    </div>
-    <div class="line reveal">
-      <span class="lab">Analytics</span>
-      <span class="v">SQL · Databricks · BigQuery · Grafana · OpenSearch · Tableau · Looker Studio · Airflow</span>
-    </div>
-    <div class="line reveal" style="--d:.05s">
-      <span class="lab">Experimentation</span>
-      <span class="v">A/B testing · Statsig · experiment design · retention &amp; cohort analysis · funnel / surface health</span>
-    </div>
-    <div class="line reveal" style="--d:.1s">
-      <span class="lab">Live Ops</span>
-      <span class="v">release management · content programming · stakeholder management · incident response</span>
-    </div>
-    <div class="line reveal" style="--d:.15s">
-      <span class="lab">Also</span>
-      <span class="v">Swift · Python · TypeScript · TensorFlow · FastAPI · Unity/UEFN SDK · Jupyter · Git</span>
-    </div>
   </section>
 
   <!-- ═══ CONTACT ═══ -->
