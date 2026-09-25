@@ -29,12 +29,12 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:      #16130d;
+    --bg:      #2a2318;
     --paper:   #e8e1cf;
     --muted:   rgba(232,225,207,.78);
     --faint:   rgba(232,225,207,.55);
     --faint-2: rgba(232,225,207,.38);
-    --border:  rgba(232,225,207,.2);
+    --border:  rgba(232,225,207,.24);
     --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
     --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     --caps: 'Cinzel', var(--serif);
@@ -61,7 +61,7 @@
 
   ::-webkit-scrollbar { width: 10px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: rgba(232,225,207,.28); border-radius: 8px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(232,225,207,.32); border-radius: 8px; border: 2px solid var(--bg); }
   ::-webkit-scrollbar-thumb:hover { background: rgba(232,225,207,.3); }
 
   /* ── nav ── */
@@ -75,7 +75,12 @@
   nav a.active { color: var(--paper); border-bottom: 1px solid var(--faint); padding-bottom: 2px; }
 
   /* ── hero ── */
-  .hero { padding: clamp(4.5rem, 11vw, 7.5rem) 0 4.5rem; }
+  .hero { padding: clamp(4.5rem, 11vw, 7.5rem) 0 4.5rem; position: relative; }
+  .hero::before {
+    content: ""; position: absolute; top: -18%; left: 50%; transform: translateX(-50%);
+    width: min(920px, 100vw); height: 560px; pointer-events: none;
+    background: radial-gradient(60% 55% at 50% 38%, rgba(232,225,207,.075), transparent 70%);
+  }
   .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
   h1 {
     font-family: var(--serif);
@@ -111,7 +116,7 @@
     position: relative;
   }
   .work-row:nth-last-of-type(1) { border-bottom: 1px solid var(--border); }
-  .work-row:hover { background: rgba(232,225,207,.06); }
+  .work-row:hover { background: rgba(232,225,207,.08); }
   .work-row .no { font-family: var(--mono); font-size: 12px; color: var(--faint); flex: 0 0 36px; }
   .work-row .body { flex: 1; min-width: 0; }
   .work-row .body .t { font-weight: 500; font-size: 19px; font-family: var(--serif); letter-spacing: -.005em; }
