@@ -17,7 +17,7 @@ GitHub Pages redeploys automatically in about a minute. No build step, no framew
 
 ## Design
 
-- Mono-lab minimal: near-black `#0b0b0c`, hairline dividers, numbered work rows, one cyan accent
+- Editorial mono-lab: warm paper `#e8e1cf` on soft black `#16130d`, EB Garamond serif voice, Cinzel engraved section labels, IBM Plex Mono details, hairline dividers
 - Experience → builds → stack → contact; builds are side projects only (the day job stays in Experience)
 - Share cards: OG/Twitter meta + generated `assets/og-card.png` (1200×630)
 - Konami easter egg: `↑ ↑ ↓ ↓ ← → ← → B A`
